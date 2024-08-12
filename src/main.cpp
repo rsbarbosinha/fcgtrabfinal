@@ -1714,9 +1714,9 @@ void TextRendering_ShowEulerAngles(GLFWwindow* window)
     if ( !g_ShowInfoText )
         return;
 
-    float pad = TextRendering_LineHeight(window);
+    //float pad = TextRendering_LineHeight(window);
 
-    char buffer[80];
+    //char buffer[80];
     //snprintf(buffer, 80, "Euler Angles rotation matrix = Z(%.2f)*Y(%.2f)*X(%.2f)\n", g_AngleZ, g_AngleY, g_AngleX);
 
     //TextRendering_PrintString(window, buffer, -1.0f+pad/10, -1.0f+2*pad/10, 1.0f);
