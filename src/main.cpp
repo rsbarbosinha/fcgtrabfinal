@@ -230,16 +230,16 @@ bool g_MiddleMouseButtonPressed = false; // Análogo para botão do meio do mous
 // usuário através do mouse (veja função CursorPosCallback()). A posição
 // efetiva da câmera é calculada dentro da função main(), dentro do loop de
 // renderização.
-float g_CameraTheta = 0.0f; // Ângulo no plano ZX em relação ao eixo Z
-float g_CameraPhi = 0.0f;   // Ângulo em relação ao eixo Y
+float g_CameraTheta = 0.785f; // Ângulo no plano ZX em relação ao eixo Z
+float g_CameraPhi = -0.785f;   // Ângulo em relação ao eixo Y
 float g_CameraDistance = 3.5f; // Distância da câmera para a origem
-
-// Variáveis que definem a câmera em coordenadas esféricas, controladas pelo
-// usuário através do mouse (veja função CursorPosCallback()). A posição
-// efetiva da câmera é calculada dentro da função main(), conforme a
-// movimentação.
-float g_CameravTheta = 0.0f; // Ângulo no plano ZX em relação ao eixo Z
-float g_CameravPhi = 0.0f;   // Ângulo em relação ao eixo Y
+float g_Camx = 0.0f; // componente x da posicao da camera
+float g_Camy = 0.0f; // componente x da posicao da camera
+float g_Camz = -5.0f; // componente x da posicao da camera
+float g_Camforward = 0.0f; //Componente de movimentacao da camera
+float g_Camsideways = 0.0f; //Componente de movimentacao da camera
+bool g_CameraFree = false;
+bool g_CameraInit = true;
 
 // Variáveis que controlam rotação do antebraço
 float g_ForearmAngleZ = 0.0f;
@@ -250,7 +250,7 @@ float g_TorsoPositionX = 0.0f;
 float g_TorsoPositionY = 1.0f;
 float g_TorsoPositionZ = -3.0f;
 float g_AngleLegX    = 0.3f;
-float speed = 0.01f;
+float speed = 0.1f;
 unsigned long g_TorsoMov = 0;
 
 // Variáveis que controlam a movimentação do projetil
@@ -318,7 +318,7 @@ int main(int argc, char* argv[])
     // Criamos uma janela do sistema operacional, com 800 colunas e 600 linhas
     // de pixels, e com título "INF01047 ...".
     GLFWwindow* window;
-    window = glfwCreateWindow(800, 600, "INF01047 - 124372 - Rodolfo Souza Barbosa", NULL, NULL);
+    window = glfwCreateWindow(800, 600, "INF01047 - 124372 218318 - Rodolfo Jean", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -484,22 +484,52 @@ int main(int argc, char* argv[])
                 }
             }
         }
+        
+        glm::vec4 camera_position_c;
+        glm::vec4 camera_lookat_l;
+        glm::vec4 camera_view_vector;
+        glm::vec4 camera_up_vector;
+        
+        if(g_CameraFree){
+        	// Computamos a posição da câmera utilizando coordenadas esféricas.  As
+        	// variáveis g_CameraDistance, g_CameraPhi, e g_CameraTheta são
+        	// controladas pelo mouse do usuário. Veja as funções CursorPosCallback()
+        	// e ScrollCallback().
+        	float vy = sin(g_CameraPhi);
+        	float vz = cos(g_CameraPhi)*cos(g_CameraTheta);
+        	float vx = cos(g_CameraPhi)*sin(g_CameraTheta);
 
-        // Computamos a posição da câmera utilizando coordenadas esféricas.  As
-        // variáveis g_CameraDistance, g_CameraPhi, e g_CameraTheta são
-        // controladas pelo mouse do usuário. Veja as funções CursorPosCallback()
-        // e ScrollCallback().
-        float r = g_CameraDistance;
-        float y = g_TorsoPositionY + r*sin(g_CameraPhi);
-        float z = g_TorsoPositionZ + r*cos(g_CameraPhi)*cos(g_CameraTheta);
-        float x = g_TorsoPositionX + r*cos(g_CameraPhi)*sin(g_CameraTheta);
+        	// Abaixo definimos as varáveis que efetivamente definem a câmera virtual.
+        	// Veja slides 195-227 e 229-234 do documento Aula_08_Sistemas_de_Coordenadas.pdf.
+        	camera_position_c  = glm::vec4(g_Camx,g_Camy,g_Camz,1.0f); // Ponto "c", centro da câmera
+        	camera_view_vector   = glm::vec4(vx,vy,vz,0.0f); // Vetor "view", sentido para onde a câmera está virada
+		camera_view_vector = camera_view_vector/norm(camera_view_vector);
+        	g_Camx += g_Camforward*camera_view_vector.x;
+        	g_Camy += g_Camforward*camera_view_vector.y;
+        	g_Camz += g_Camforward*camera_view_vector.z;
+        	g_Camforward=0;
+        	camera_up_vector   = glm::vec4(0.0f,1.0f,0.0f,0.0f); // Vetor "up" fixado para apontar para o "céu" (eito Y global)
+        	g_Camx += g_Camsideways*(crossproduct(camera_view_vector,camera_up_vector)).x;
+        	//g_Camy += g_Camsideways*(crossproduct(camera_view_vector,camera_up_vector)).y;
+        	g_Camz += g_Camsideways*(crossproduct(camera_view_vector,camera_up_vector)).z;
+        	g_Camsideways=0;
+        } else{
+        	// Computamos a posição da câmera utilizando coordenadas esféricas.  As
+        	// variáveis g_CameraDistance, g_CameraPhi, e g_CameraTheta são
+        	// controladas pelo mouse do usuário. Veja as funções CursorPosCallback()
+        	// e ScrollCallback().
+        	float r = g_CameraDistance;
+        	float y = g_TorsoPositionY + r*sin(g_CameraPhi);
+        	float z = g_TorsoPositionZ + r*cos(g_CameraPhi)*cos(g_CameraTheta);
+        	float x = g_TorsoPositionX + r*cos(g_CameraPhi)*sin(g_CameraTheta);
 
-        // Abaixo definimos as varáveis que efetivamente definem a câmera virtual.
-        // Veja slides 195-227 e 229-234 do documento Aula_08_Sistemas_de_Coordenadas.pdf.
-        glm::vec4 camera_position_c  = glm::vec4(x,y,z,1.0f); // Ponto "c", centro da câmera
-        glm::vec4 camera_lookat_l    = glm::vec4(g_TorsoPositionX,g_TorsoPositionY,g_TorsoPositionZ,1.0f); // Ponto "l", para onde a câmera (look-at) estará sempre olhando
-        glm::vec4 camera_view_vector = camera_lookat_l - camera_position_c; // Vetor "view", sentido para onde a câmera está virada
-        glm::vec4 camera_up_vector   = glm::vec4(0.0f,1.0f,0.0f,0.0f); // Vetor "up" fixado para apontar para o "céu" (eito Y global)
+        	// Abaixo definimos as varáveis que efetivamente definem a câmera virtual.
+        	// Veja slides 195-227 e 229-234 do documento Aula_08_Sistemas_de_Coordenadas.pdf.
+        	camera_position_c  = glm::vec4(x,y,z,1.0f); // Ponto "c", centro da câmera
+        	camera_lookat_l    = glm::vec4(g_TorsoPositionX,g_TorsoPositionY,g_TorsoPositionZ,1.0f); // Ponto "l", para onde a câmera (look-at) estará sempre olhando
+        	camera_view_vector = camera_lookat_l - camera_position_c; // Vetor "view", sentido para onde a câmera está virada
+        	camera_up_vector   = glm::vec4(0.0f,1.0f,0.0f,0.0f); // Vetor "up" fixado para apontar para o "céu" (eito Y global)
+        }
 
         globalCamView = camera_view_vector;
 
@@ -758,39 +788,63 @@ int main(int argc, char* argv[])
 //Funcao que gerencia o movimento do personagem
 void Mov(unsigned long timeElapsed, GLFWwindow* window)
 {
-    //Testa se 10 milissegundos se passaram soh permite movimento a cada intervalo
-    if((timeElapsed/10)%2!=g_TorsoMov)
+    //Testa se 100 milissegundos se passaram soh permite movimento a cada intervalo
+    if((timeElapsed/50)%2!=g_TorsoMov)
     {
-        g_TorsoMov=(timeElapsed/10)%2;
+        g_TorsoMov=(timeElapsed/50)%2;
         if(glfwGetKey(window,GLFW_KEY_W) == GLFW_PRESS)
         {
+        	if(g_CameraFree){
+        		// Atualizamos a posicao da camera
+        		// pressionamento de W, simulando um deslocamento para frente.
+        		g_Camforward += 0.1;
+        	} else {
             if(g_TorsoPositionZ<-2.0)
             {
                 g_TorsoPositionZ += speed;
-                g_AngleLegX += 0.01f;
+                g_AngleLegX += 0.1f;
             }
+            	}
         }
         if(glfwGetKey(window,GLFW_KEY_S) == GLFW_PRESS)
         {
+        	if(g_CameraFree){
+        		// Atualizamos a posicao da camera
+        		// pressionamento de W, simulando um deslocamento para frente.
+        		g_Camforward -= 0.1;
+        	} else {
             if(g_TorsoPositionZ>-4.0)
             {
                 g_TorsoPositionZ -= speed;
-                g_AngleLegX += 0.01f;
+                g_AngleLegX += 0.1f;
             }
+            	}
         }
         if(glfwGetKey(window,GLFW_KEY_A) == GLFW_PRESS)
         {
+        	if(g_CameraFree){
+        		// Atualizamos a posicao da camera
+        		// pressionamento de W, simulando um deslocamento para frente.
+        		g_Camsideways -= 0.1;
+        	} else {
             if(g_TorsoPositionX<2.0)
             {
                 g_TorsoPositionX += speed;
             }
+            	}
         }
         if(glfwGetKey(window,GLFW_KEY_D) == GLFW_PRESS)
         {
+        	if(g_CameraFree){
+        		// Atualizamos a posicao da camera
+        		// pressionamento de W, simulando um deslocamento para frente.
+        		g_Camsideways += 0.1;
+        	} else {
             if(g_TorsoPositionX>-2.0)
             {
                 g_TorsoPositionX -= speed;
             }
+            	}
         }
         if(g_AngleLegX>1.2){g_AngleLegX=0;}
     }
@@ -1577,6 +1631,12 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mod)
         fprintf(stdout,"Shaders recarregados!\n");
         fflush(stdout);
     }
+    
+    // Se o usuário apertar a tecla C, utilizamos camera free.
+    if (key == GLFW_KEY_C && action == GLFW_PRESS)
+    {
+        g_CameraFree = !g_CameraFree;
+    }
 }
 
 // Definimos o callback para impressão de erros da GLFW no terminal
@@ -1657,9 +1717,9 @@ void TextRendering_ShowEulerAngles(GLFWwindow* window)
     float pad = TextRendering_LineHeight(window);
 
     char buffer[80];
-    snprintf(buffer, 80, "Euler Angles rotation matrix = Z(%.2f)*Y(%.2f)*X(%.2f)\n", g_AngleZ, g_AngleY, g_AngleX);
+    //snprintf(buffer, 80, "Euler Angles rotation matrix = Z(%.2f)*Y(%.2f)*X(%.2f)\n", g_AngleZ, g_AngleY, g_AngleX);
 
-    TextRendering_PrintString(window, buffer, -1.0f+pad/10, -1.0f+2*pad/10, 1.0f);
+    //TextRendering_PrintString(window, buffer, -1.0f+pad/10, -1.0f+2*pad/10, 1.0f);
 }
 
 // Escrevemos na tela qual matriz de projeção está sendo utilizada.
