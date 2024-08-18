@@ -25,6 +25,11 @@ uniform mat4 projection;
 #define CUBE   3
 #define FENCE  4
 #define DUCK   5
+#define HEAD   6
+#define BODY   7
+#define LEG    8
+#define UARM   9
+#define FARM  10
 uniform int object_id;
 
 // Parâmetros da axis-aligned bounding box (AABB) do modelo
@@ -36,6 +41,10 @@ uniform sampler2D TextureImage0;
 uniform sampler2D TextureImage1;
 uniform sampler2D TextureImage2;
 uniform sampler2D TextureImage3;
+uniform sampler2D TextureImage4;
+uniform sampler2D TextureImage5;
+uniform sampler2D TextureImage6;
+uniform sampler2D TextureImage7;
 
 // O valor de saída ("out") de um Fragment Shader é a cor final do fragmento.
 out vec4 color;
@@ -72,7 +81,7 @@ void main()
     float U = 0.0;
     float V = 0.0;
 
-    if ( object_id == SPHERE )
+    if ( object_id == SPHERE)
     {
         // PREENCHA AQUI as coordenadas de textura da esfera, computadas com
         // projeção esférica EM COORDENADAS DO MODELO. Utilize como referência
@@ -94,7 +103,7 @@ void main()
         U = (atan(psphere.x,psphere.z) + M_PI) / (2 * M_PI);
         V = (asin(psphere.y) + M_PI_2) / M_PI;
     }
-    else if ( object_id == BUNNY || object_id == FENCE)
+    else if ( object_id == BUNNY || object_id == FENCE || object_id == CUBE || object_id == DUCK)
     {
         // PREENCHA AQUI as coordenadas de textura do coelho, computadas com
         // projeção planar XY em COORDENADAS DO MODELO. Utilize como referência
@@ -123,7 +132,7 @@ void main()
         U = texcoords.x;
         V = texcoords.y;
     }
-    else if ( object_id == CUBE )
+    else if ( object_id == HEAD)
     {
         float minx = bbox_min.x;
         float maxx = bbox_max.x;
@@ -134,10 +143,32 @@ void main()
         float minz = bbox_min.z;
         float maxz = bbox_max.z;
 
-        U = (position_model.x - minx)/(maxx - minx);
-        V = (position_model.y - miny)/(maxy - miny);
+        if(position_model.z == maxz){
+            U = (position_model.x - maxx)/-4*(maxx - minx) + 0.25;
+            V = (position_model.y - maxy)/-2*(maxy - miny);
+        }
+        else if(position_model.z == minz){
+            U = (position_model.x - maxx)/-4*(maxx - minx) + 0.75;
+            V = (position_model.y - maxy)/-2*(maxy - miny);
+        }
+        else if(position_model.x == minx){
+            U = (position_model.z - maxz)/-4*(maxz - minz) + 0.5;
+            V = (position_model.y - maxy)/-2*(maxy - miny);
+        }
+        else if(position_model.x == maxx){
+            U = (position_model.z - minz)/4*(maxz - minz) + 0.0;
+            V = (position_model.y - maxy)/-2*(maxy - miny);
+        }
+        else if(position_model.y == miny){
+            U = (position_model.z - minz)/4*(maxz - minz) + 0.25;
+            V = (position_model.x - maxx)/-2*(maxx - minx) + 0.5;
+        }
+        else if(position_model.y <= maxy +0.0001f && position_model.y >= maxy -0.0001f){
+            U = (position_model.z - maxz)/-4*(maxz - minz) + 0.5;
+            V = (position_model.x - maxx)/-2*(maxx - minx) + 0.5;
+        }        
     }
-    else if ( object_id == DUCK)
+    else if ( object_id == BODY)
     {
         float minx = bbox_min.x;
         float maxx = bbox_max.x;
@@ -148,37 +179,175 @@ void main()
         float minz = bbox_min.z;
         float maxz = bbox_max.z;
 
-        U = (position_model.x - minx)/(maxx - minx);
-        V = (position_model.y - miny)/(maxy - miny);
+        if(position_model.z == maxz){
+            U = 2*(position_model.x - minx)/6*(maxx - minx) + 1.0/6;
+            V = 3*(position_model.y - miny)/4*(maxy - miny);
+        }
+        else if(position_model.z == minz){
+            U = -2*(position_model.x - minx)/6*(maxx - minx) + 6.0/6;
+            V = 3*(position_model.y - miny)/4*(maxy - miny);
+        }
+        else if(position_model.x == minx){
+            U = 1*(position_model.z - minz)/6*(maxz - minz) + 0.0/6;
+            V = 3*(position_model.y - miny)/4*(maxy - miny);
+        }
+        else if(position_model.x == maxx){
+            U = -1*(position_model.z - minz)/6*(maxz - minz) + 4.0/6;
+            V = 3*(position_model.y - miny)/4*(maxy - miny);
+        }
+        else if(position_model.y <= maxy +0.0001f && position_model.y >= maxy -0.0001f){
+            U = 2*(position_model.x - minx)/6*(maxx - minx) + 1.0/6;
+            V = 1*(position_model.z - minz)/4*(maxz - minz) + 3.0/4;
+        }
+        else if(position_model.y == miny){
+            U = 2*(position_model.x - minx)/6*(maxx - minx) + 3.0/6;
+            V = 1*(position_model.z - minz)/4*(maxz - minz) + 3.0/4;
+        }        
+    }
+    else if ( object_id == LEG)
+    {
+        float minx = bbox_min.x;
+        float maxx = bbox_max.x;
+
+        float miny = bbox_min.y;
+        float maxy = bbox_max.y;
+
+        float minz = bbox_min.z;
+        float maxz = bbox_max.z;
+
+        if(position_model.z == maxz){
+            U = 1*(position_model.x - minx)/4*(maxx - minx) + 1.0/4;
+            V = 3*(position_model.y - miny)/4*(maxy - miny);
+        }
+        else if(position_model.z == minz){
+            U = 1*(position_model.x - minx)/4*(maxx - minx) + 3.0/4;
+            V = 3*(position_model.y - miny)/4*(maxy - miny);
+        }
+        else if(position_model.x == minx){
+            U = 1*(position_model.z - minz)/4*(maxz - minz) + 0.0/4;
+            V = 3*(position_model.y - miny)/4*(maxy - miny);
+        }
+        else if(position_model.x == maxx){
+            U = 1*(position_model.z - minz)/4*(maxz - minz) + 2.0/4;
+            V = 3*(position_model.y - miny)/4*(maxy - miny);
+        }
+        else if(position_model.y <= maxy +0.0001f && position_model.y >= maxy -0.0001f){
+            U = 1*(position_model.x - minx)/4*(maxx - minx) + 1.0/4;
+            V = 1*(position_model.z - minz)/4*(maxz - minz) + 3.0/4;
+        }
+        else if(position_model.y == miny){
+            U = 1*(position_model.x - minx)/4*(maxx - minx) + 2.0/4;
+            V = 1*(position_model.z - minz)/4*(maxz - minz) + 3.0/4;
+        }        
+    }
+    else if ( object_id == UARM)
+    {
+        float minx = bbox_min.x;
+        float maxx = bbox_max.x;
+
+        float miny = bbox_min.y;
+        float maxy = bbox_max.y;
+
+        float minz = bbox_min.z;
+        float maxz = bbox_max.z;
+
+        if(position_model.z == maxz){
+            U = 1*(position_model.x - minx)/4*(maxx - minx) + 1.0/4;
+            V = 1.5*(position_model.y - miny)/4*(maxy - miny) + 1.5/4;
+        }
+        else if(position_model.z == minz){
+            U = 1*(position_model.x - minx)/4*(maxx - minx) + 3.0/4;
+            V = 1.5*(position_model.y - miny)/4*(maxy - miny) + 1.5/4;
+        }
+        else if(position_model.x == minx){
+            U = 1*(position_model.z - minz)/4*(maxz - minz) + 0.0/4;
+            V = 1.5*(position_model.y - miny)/4*(maxy - miny) + 1.5/4;
+        }
+        else if(position_model.x == maxx){
+            U = 1*(position_model.z - minz)/4*(maxz - minz) + 2.0/4;
+            V = 1.5*(position_model.y - miny)/4*(maxy - miny) + 1.5/4;
+        }
+        else if(position_model.y <= maxy +0.0001f && position_model.y >= maxy -0.0001f){
+            U = 1*(position_model.x - minx)/4*(maxx - minx) + 1.0/4;
+            V = 1*(position_model.z - minz)/4*(maxz - minz) + 3.0/4;
+        }
+        else if(position_model.y == miny){
+            U = 1*(position_model.x - minx)/4*(maxx - minx) + 2.0/4;
+            V = 1*(position_model.z - minz)/4*(maxz - minz) + 3.0/4;
+        }        
+    }
+    else if ( object_id == FARM)
+    {
+        float minx = bbox_min.x;
+        float maxx = bbox_max.x;
+
+        float miny = bbox_min.y;
+        float maxy = bbox_max.y;
+
+        float minz = bbox_min.z;
+        float maxz = bbox_max.z;
+
+        if(position_model.z == maxz){
+            U = 1*(position_model.x - minx)/4*(maxx - minx) + 1.0/4;
+            V = 1.5*(position_model.y - miny)/4*(maxy - miny);
+        }
+        else if(position_model.z == minz){
+            U = 1*(position_model.x - minx)/4*(maxx - minx) + 3.0/4;
+            V = 1.5*(position_model.y - miny)/4*(maxy - miny);
+        }
+        else if(position_model.x == minx){
+            U = 1*(position_model.z - minz)/4*(maxz - minz) + 0.0/4;
+            V = 1.5*(position_model.y - miny)/4*(maxy - miny);
+        }
+        else if(position_model.x == maxx){
+            U = 1*(position_model.z - minz)/4*(maxz - minz) + 2.0/4;
+            V = 1.5*(position_model.y - miny)/4*(maxy - miny);
+        }
+        else if(position_model.y == maxy){
+            U = 1*(position_model.x - minx)/4*(maxx - minx) + 1.0/4;
+            V = 1*(position_model.z - minz)/4*(maxz - minz) + 3.0/4;
+        }
+        else if(position_model.y == miny){
+            U = 1*(position_model.x - minx)/4*(maxx - minx) + 2.0/4;
+            V = 1*(position_model.z - minz)/4*(maxz - minz) + 3.0/4;
+        }        
     }
 
-    // Obtemos a refletância difusa a partir da leitura da imagem TextureImage0
-    vec3 Kd0 = texture(TextureImage0, vec2(U,V)).rgb;
+    // Obtemos a refletância difusa a partir da leitura da imagem TextureImage
+    vec3 Kd0;
 
     if ( object_id == SPHERE ){
         Kd0 = texture(TextureImage0, vec2(U,V)).rgb;
     }
-    else if ( object_id == CUBE )
-    {
-        Kd0 = texture(TextureImage2, vec2(U,V)).rgb;
-    }
-    else if ( object_id == FENCE )
-    {
+    else if ( object_id == CUBE ){
         Kd0 = texture(TextureImage3, vec2(U,V)).rgb;
     }
-    else if ( object_id == PLANE )
-    {
+    else if ( object_id == FENCE ){
+        Kd0 = texture(TextureImage3, vec2(U,V)).rgb;
+    }
+    else if ( object_id == PLANE ){
         Kd0 = texture(TextureImage1, vec2(U,V)).rgb;
     }
-    else if ( object_id == DUCK )
-    {
+    else if ( object_id == DUCK ){
         Kd0 = texture(TextureImage2, vec2(U,V)).rgb;
+    }
+    else if ( object_id == HEAD ){
+        Kd0 = texture(TextureImage4, vec2(U,V)).rgb;
+    }
+    else if ( object_id == BODY ){
+        Kd0 = texture(TextureImage5, vec2(U,V)).rgb;
+    }
+    else if ( object_id == LEG ){
+        Kd0 = texture(TextureImage6, vec2(U,V)).rgb;
+    }
+    else if ( object_id == UARM || object_id == FARM ){
+        Kd0 = texture(TextureImage7, vec2(U,V)).rgb;
     }
 
     // Equação de Iluminação
     float lambert = max(0,dot(n,l));
 
-    color.rgb = Kd0 * (lambert + 0.02);
+    color.rgb = Kd0;// * (lambert + 0.02);
 
     // NOTE: Se você quiser fazer o rendering de objetos transparentes, é
     // necessário:

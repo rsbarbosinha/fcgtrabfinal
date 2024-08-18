@@ -247,7 +247,7 @@ float g_ForearmAngleX = -2.0f;
 
 // Variáveis que controlam translação do torso
 float g_TorsoPositionX = 0.0f;
-float g_TorsoPositionY = 1.0f;
+float g_TorsoPositionY = 1.24f;
 float g_TorsoPositionZ = -3.0f;
 float g_AngleLegX    = 0.3f;
 float speed = 0.1f;
@@ -367,6 +367,10 @@ int main(int argc, char* argv[])
     LoadTextureImage("../../data/floor.jpg"); // TextureImage1
     LoadTextureImage("../../data/duck.jpg"); // TextureImage2
     LoadTextureImage("../../data/maderatex.jpg"); // TextureImage3
+    LoadTextureImage("../../data/head.jpg"); // TextureImage4
+    LoadTextureImage("../../data/body.jpg"); // TextureImage5
+    LoadTextureImage("../../data/leg.jpg"); // TextureImage6
+    LoadTextureImage("../../data/arm.jpg"); // TextureImage7
 
     // Construímos a representação de objetos geométricos através de malhas de triângulos
     ObjModel spheremodel("../../data/sphere.obj");
@@ -395,22 +399,22 @@ int main(int argc, char* argv[])
 
     for(int i = 0; i < ALVOS; i++){
         alvo[i].alvoPositionX = -2.0f;
-        alvo[i].alvoPositionY = 0.0f;
+        alvo[i].alvoPositionY = 1.2f;
         alvo[i].alvoPositionZ = 1.0f;
         alvo[i].alvoHalfX = 0.15f;
         alvo[i].alvoHalfY = 0.15f;
         alvo[i].alvoHalfZ = 0.05f;
         alvo[i].bezierP0.x = -2.0f;
-        alvo[i].bezierP0.y = 0.0f;
+        alvo[i].bezierP0.y = 1.2f;
         alvo[i].bezierP0.z = 1.0f;
         alvo[i].bezierP1.x = -1.0f;
-        alvo[i].bezierP1.y = 2.0f;
+        alvo[i].bezierP1.y = 3.2f;
         alvo[i].bezierP1.z = 1.0f;
         alvo[i].bezierP2.x = 0.0f;
-        alvo[i].bezierP2.y = -2.0f;
+        alvo[i].bezierP2.y = -0.8f;
         alvo[i].bezierP2.z = 1.0f;
         alvo[i].bezierP3.x = 1.0f;
-        alvo[i].bezierP3.y = 0.0f;
+        alvo[i].bezierP3.y = 1.2f;
         alvo[i].bezierP3.z = 1.0f;
         alvo[i].isOn = true;
     }
@@ -580,6 +584,11 @@ int main(int argc, char* argv[])
         #define CUBE   3
         #define FENCE  4
         #define DUCK   5
+        #define HEAD   6
+        #define BODY   7
+        #define LEG    8
+        #define UARM   9
+        #define FARM  10
 
         // Desenhamos o modelo da esfera
         model = Matrix_Translate(g_ProjetilPositionX, g_ProjetilPositionY, g_ProjetilPositionZ)
@@ -596,14 +605,14 @@ int main(int argc, char* argv[])
         //DrawVirtualObject("the_bunny");
 
         // Desenhamos a cerca
-        model = Matrix_Translate(0.0f,-1.1f,-4.0f) * Matrix_Rotate_Y(M_PI_2)
-              * Matrix_Scale(0.02f, 0.02f, 0.02f);
-        glUniformMatrix4fv(g_model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-        glUniform1i(g_object_id_uniform, FENCE);
-        DrawVirtualObject("wood_1");
+        //model = Matrix_Translate(0.0f,-1.1f,-4.0f) * Matrix_Rotate_Y(M_PI_2)
+        //      * Matrix_Scale(0.02f, 0.02f, 0.02f);
+        //glUniformMatrix4fv(g_model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        //glUniform1i(g_object_id_uniform, FENCE);
+        //DrawVirtualObject("wood_1");
 
         // Desenhamos o plano do chão
-        model = Matrix_Translate(0.0f,-1.1f,0.0f)
+        model = Matrix_Translate(0.0f,0.0f,0.0f)
               * Matrix_Scale(4.0f, 4.0f, 4.0f);
         glUniformMatrix4fv(g_model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(g_object_id_uniform, PLANE);
@@ -631,85 +640,76 @@ int main(int argc, char* argv[])
                       //* Matrix_Rotate_Y(M_PI);
 
         PushMatrix(model);
-            model = model * Matrix_Scale(0.8f, 1.0f, 0.2f);
+            model = model * Matrix_Scale(0.4f, 0.6f, 0.2f);
             glUniformMatrix4fv(g_model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-            glUniform1i(g_object_id_uniform, CUBE);
+            glUniform1i(g_object_id_uniform, BODY);
             DrawVirtualObject("the_cube");
         PopMatrix(model);
         PushMatrix(model); // Guardamos matriz model atual na pilha
-            model = model * Matrix_Translate(-0.25f, -1.05f, 0.0f); // Atualizamos matriz model (multiplicação à direita) com uma translação para a perna direita
+            model = model * Matrix_Translate(-0.1f, -0.62f, 0.0f); // Atualizamos matriz model (multiplicação à direita) com uma translação para a perna direita
             PushMatrix(model); // Guardamos matriz model atual na pilha
                 PushMatrix(model); // Guardamos matriz model atual na pilha
                     model = model * Matrix_Rotate_X(AngleLeg)
-                                  * Matrix_Scale(0.3f, 1.1f, 0.3f); // Atualizamos matriz model (multiplicação à direita) com um escalamento da perna direita
+                                  * Matrix_Scale(0.2f, 0.6f, 0.2f); // Atualizamos matriz model (multiplicação à direita) com um escalamento da perna direita
                     glUniformMatrix4fv(g_model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-                    glUniform1i(g_object_id_uniform, CUBE);
+                    glUniform1i(g_object_id_uniform, LEG);
                     DrawVirtualObject("the_cube");
                 PopMatrix(model); // Tiramos da pilha a matriz model guardada anteriormente
             PopMatrix(model); // Tiramos da pilha a matriz model guardada anteriormente
         PopMatrix(model); // Tiramos da pilha a matriz model guardada anteriormente
         PushMatrix(model); // Guardamos matriz model atual na pilha
-            model = model * Matrix_Translate(0.25f, -1.05f, 0.0f); // Atualizamos matriz model (multiplicação à direita) com uma translação para a perna esq
+            model = model * Matrix_Translate(0.1f, -0.62f, 0.0f); // Atualizamos matriz model (multiplicação à direita) com uma translação para a perna esq
             PushMatrix(model); // Guardamos matriz model atual na pilha
                 PushMatrix(model); // Guardamos matriz model atual na pilha
                     model = model * Matrix_Rotate_X(-AngleLeg)
-                                  * Matrix_Scale(0.3f, 1.1f, 0.3f); // Atualizamos matriz model (multiplicação à direita) com um escalamento da perna esq
+                                  * Matrix_Scale(0.2f, 0.6f, 0.2f); // Atualizamos matriz model (multiplicação à direita) com um escalamento da perna esq
                     glUniformMatrix4fv(g_model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-                    glUniform1i(g_object_id_uniform, CUBE);
+                    glUniform1i(g_object_id_uniform, LEG);
                     DrawVirtualObject("the_cube");
                 PopMatrix(model); // Tiramos da pilha a matriz model guardada anteriormente
             PopMatrix(model); // Tiramos da pilha a matriz model guardada anteriormente
         PopMatrix(model); // Tiramos da pilha a matriz model guardada anteriormente
 
         PushMatrix(model); // Guardamos matriz model atual na pilha
-            model = model * Matrix_Translate(0.0f, 0.05f, 0.0f); // Atualizamos matriz model (multiplicação à direita) com uma translação para a cabeca
+            model = model * Matrix_Translate(0.0f, 0.02f, 0.0f); // Atualizamos matriz model (multiplicação à direita) com uma translação para a cabeca
             PushMatrix(model); // Guardamos matriz model atual na pilha
-                model = model // Atualizamos matriz model (multiplicação à direita) com a rotação da cabeca
+                //model = model // Atualizamos matriz model (multiplicação à direita) com a rotação da cabeca
                       //* Matrix_Rotate_Z(g_AngleZ)  // TERCEIRO rotação Z de Euler
-                      * Matrix_Rotate_Y(g_CameraTheta)  // SEGUNDO rotação Y de Euler
-                      * Matrix_Rotate_X(-g_CameraPhi); // PRIMEIRO rotação X de Euler
+                      //* Matrix_Rotate_Y(g_CameraTheta)  // SEGUNDO rotação Y de Euler
+                      //* Matrix_Rotate_X(-g_CameraPhi); // PRIMEIRO rotação X de Euler
                 PushMatrix(model); // Guardamos matriz model atual na pilha
-                    model = model * Matrix_Scale(0.4f, -0.4f, 0.4f); // Atualizamos matriz model (multiplicação à direita) com um escalamento da cabeca
+                    model = model * Matrix_Scale(-0.4f, -0.4f, 0.4f); // Atualizamos matriz model (multiplicação à direita) com um escalamento da cabeca
                     glUniformMatrix4fv(g_model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-                    glUniform1i(g_object_id_uniform, CUBE);
+                    glUniform1i(g_object_id_uniform, HEAD);
                     DrawVirtualObject("the_cube");
                 PopMatrix(model); // Tiramos da pilha a matriz model guardada anteriormente
             PopMatrix(model); // Tiramos da pilha a matriz model guardada anteriormente
         PopMatrix(model); // Tiramos da pilha a matriz model guardada anteriormente
 
         PushMatrix(model); // Guardamos matriz model atual na pilha
-            model = model * Matrix_Translate(-0.55f, 0.0f, 0.0f); // Atualizamos matriz model (multiplicação à direita) com uma translação para o braço direito
+            model = model * Matrix_Translate(-0.32f, 0.0f, 0.0f); // Atualizamos matriz model (multiplicação à direita) com uma translação para o braço direito
             PushMatrix(model); // Guardamos matriz model atual na pilha
                 model = model // Atualizamos matriz model (multiplicação à direita) com a rotação do braço direito
                       * Matrix_Rotate_Z(-0.1)  // TERCEIRO rotação Z de Euler
                       * Matrix_Rotate_Y(0)  // SEGUNDO rotação Y de Euler
                       * Matrix_Rotate_X(-1); // PRIMEIRO rotação X de Euler
                 PushMatrix(model); // Guardamos matriz model atual na pilha
-                    model = model * Matrix_Scale(0.2f, 0.6f, 0.2f); // Atualizamos matriz model (multiplicação à direita) com um escalamento do braço direito
+                    model = model * Matrix_Scale(0.2f, 0.3f, 0.2f); // Atualizamos matriz model (multiplicação à direita) com um escalamento do braço direito
                     glUniformMatrix4fv(g_model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-                    glUniform1i(g_object_id_uniform, CUBE);
+                    glUniform1i(g_object_id_uniform, UARM);
                     DrawVirtualObject("the_cube");
                 PopMatrix(model); // Tiramos da pilha a matriz model guardada anteriormente
                 PushMatrix(model); // Guardamos matriz model atual na pilha
-                    model = model * Matrix_Translate(0.0f, -0.65f, 0.0f); // Atualizamos matriz model (multiplicação à direita) com a translação do antebraço direito
+                    model = model * Matrix_Translate(0.0f, -0.32f, 0.0f); // Atualizamos matriz model (multiplicação à direita) com a translação do antebraço direito
                     model = model // Atualizamos matriz model (multiplicação à direita) com a rotação do antebraço direito
                           * Matrix_Rotate_Z(-0.3) // rotação Z de Euler
                           * Matrix_Rotate_X(g_ForearmAngleX); // PRIMEIRO rotação X de Euler
                     PushMatrix(model); // Guardamos matriz model atual na pilha
-                        model = model * Matrix_Scale(0.2f, 0.6f, 0.2f); // Atualizamos matriz model (multiplicação à direita) com um escalamento do antebraço direito
+                        model = model * Matrix_Scale(0.2f, 0.3f, 0.2f); // Atualizamos matriz model (multiplicação à direita) com um escalamento do antebraço direito
                         glUniformMatrix4fv(g_model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-                        glUniform1i(g_object_id_uniform, CUBE);
+                        glUniform1i(g_object_id_uniform, FARM);
                         DrawVirtualObject("the_cube");
                     PopMatrix(model); // Tiramos da pilha a matriz model guardada anteriormente
-					PushMatrix(model); // Guardamos matriz model atual na pilha
-						model = model * Matrix_Translate(0.0f, -0.65f, 0.0f); // Atualizamos matriz model (multiplicação à direita) com a translação da mao direita
-						PushMatrix(model); // Guardamos matriz model atual na pilha
-							model = model * Matrix_Scale(0.2f, 0.1f, 0.2f); // Atualizamos matriz model (multiplicação à direita) com um escalamento da mao direita
-                            glUniformMatrix4fv(g_model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-                            glUniform1i(g_object_id_uniform, CUBE);
-                            DrawVirtualObject("the_cube");
-						PopMatrix(model); // Tiramos da pilha a matriz model guardada anteriormente
-					PopMatrix(model); // Tiramos da pilha a matriz model guardada anteriormente
                 PopMatrix(model); // Tiramos da pilha a matriz model guardada anteriormente
             PopMatrix(model); // Tiramos da pilha a matriz model guardada anteriormente
         PopMatrix(model); // Tiramos da pilha a matriz model guardada anteriormente
@@ -717,35 +717,26 @@ int main(int argc, char* argv[])
         // Neste ponto a matriz model recuperada é a matriz inicial (translação do torso)
 
         PushMatrix(model); // Guardamos matriz model atual na pilha
-            model = model * Matrix_Translate(0.55f, 0.0f, 0.0f); // Atualizamos matriz model (multiplicação à direita) com uma translação para o braço esquerdo
+            model = model * Matrix_Rotate_X(AngleLeg)* Matrix_Translate(0.32f, 0.0f, 0.0f); // Atualizamos matriz model (multiplicação à direita) com uma translação para o braço esquerdo
             PushMatrix(model); // Guardamos matriz model atual na pilha
                 model = model // Atualizamos matriz model (multiplicação à direita) com a rotação do braço esquerdo
                       * Matrix_Rotate_Z(0.1);  // TERCEIRO rotação Z de Euler
                 PushMatrix(model); // Guardamos matriz model atual na pilha
-                    model = model * Matrix_Scale(0.2f, 0.6f, 0.2f); // Atualizamos matriz model (multiplicação à direita) com um escalamento do braço esquerdo
+                    model = model * Matrix_Scale(0.2f, 0.3f, 0.2f); // Atualizamos matriz model (multiplicação à direita) com um escalamento do braço esquerdo
                     glUniformMatrix4fv(g_model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-                    glUniform1i(g_object_id_uniform, CUBE);
+                    glUniform1i(g_object_id_uniform, UARM);
                     DrawVirtualObject("the_cube");
                 PopMatrix(model); // Tiramos da pilha a matriz model guardada anteriormente
                 PushMatrix(model); // Guardamos matriz model atual na pilha
-                    model = model * Matrix_Translate(0.0f, -0.65f, 0.0f); // Atualizamos matriz model (multiplicação à direita) com a translação do antebraço esquerdo
+                    model = model * Matrix_Translate(0.0f, -0.32f, 0.0f); // Atualizamos matriz model (multiplicação à direita) com a translação do antebraço esquerdo
                     model = model // Atualizamos matriz model (multiplicação à direita) com a rotação do antebraço esquerdo
                           * Matrix_Rotate_X(-0.2); // PRIMEIRO rotação X de Euler
                     PushMatrix(model); // Guardamos matriz model atual na pilha
-                        model = model * Matrix_Scale(0.2f, 0.6f, 0.2f); // Atualizamos matriz model (multiplicação à direita) com um escalamento do antebraço esquerdo
+                        model = model * Matrix_Scale(0.2f, 0.3f, 0.2f); // Atualizamos matriz model (multiplicação à direita) com um escalamento do antebraço esquerdo
                         glUniformMatrix4fv(g_model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-                        glUniform1i(g_object_id_uniform, CUBE);
+                        glUniform1i(g_object_id_uniform, FARM);
                         DrawVirtualObject("the_cube");
                     PopMatrix(model); // Tiramos da pilha a matriz model guardada anteriormente
-					PushMatrix(model); // Guardamos matriz model atual na pilha
-						model = model * Matrix_Translate(0.0f, -0.65f, 0.0f); // Atualizamos matriz model (multiplicação à direita) com a translação da mao esqurda
-						PushMatrix(model); // Guardamos matriz model atual na pilha
-							model = model * Matrix_Scale(0.2f, 0.1f, 0.2f); // Atualizamos matriz model (multiplicação à direita) com um escalamento da mao esqurda
-                            glUniformMatrix4fv(g_model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
-                            glUniform1i(g_object_id_uniform, CUBE);
-                            DrawVirtualObject("the_cube");
-						PopMatrix(model); // Tiramos da pilha a matriz model guardada anteriormente
-					PopMatrix(model); // Tiramos da pilha a matriz model guardada anteriormente
                 PopMatrix(model); // Tiramos da pilha a matriz model guardada anteriormente
             PopMatrix(model); // Tiramos da pilha a matriz model guardada anteriormente
         PopMatrix(model); // Tiramos da pilha a matriz model guardada anteriormente
@@ -754,7 +745,7 @@ int main(int argc, char* argv[])
 
         // Imprimimos na tela os ângulos de Euler que controlam a rotação do
         // terceiro cubo.
-        TextRendering_ShowEulerAngles(window);
+        //TextRendering_ShowEulerAngles(window);
 
         // Imprimimos na informação sobre a matriz de projeção sendo utilizada.
         TextRendering_ShowProjection(window);
@@ -853,16 +844,16 @@ void Mov(unsigned long timeElapsed, GLFWwindow* window)
 // Funcao para movimentação do projetil
 void MovProjetil(unsigned long timeElapsed){
     if(projetilSpeed==0){
-        g_ProjetilPositionX = g_TorsoPositionX - 0.45f;
-        g_ProjetilPositionY = g_TorsoPositionY + 0.2f;
-        g_ProjetilPositionZ = g_TorsoPositionZ + 0.8f;
+        g_ProjetilPositionX = g_TorsoPositionX - 0.35f;
+        g_ProjetilPositionY = g_TorsoPositionY + 0.22f;
+        g_ProjetilPositionZ = g_TorsoPositionZ + 0.45f;
     }
     else{
         unsigned long sElapsedInAir = timeElapsed - timeTrown;
         g_ProjetilPositionX = iniPos.x + (projetilSpeed * direction.x * sElapsedInAir * 0.001);
         g_ProjetilPositionY = iniPos.y + (projetilSpeed * direction.y * sElapsedInAir * 0.001) - (0.5 * 9.8 * sElapsedInAir * 0.001 * sElapsedInAir * 0.001);
         g_ProjetilPositionZ = iniPos.z + (projetilSpeed * direction.z * sElapsedInAir * 0.001);
-        if (g_ProjetilPositionY < -1.0){
+        if (g_ProjetilPositionY < 0.05){
             projetilSpeed = 0;
         }
     }
@@ -952,6 +943,7 @@ void LoadTextureImage(const char* filename)
     stbi_image_free(data);
 
     g_NumLoadedTextures += 1;
+    printf("Texture number %d.\n", g_NumLoadedTextures-1);
 }
 
 // Função que desenha um objeto armazenado em g_VirtualScene. Veja definição
@@ -1036,6 +1028,10 @@ void LoadShadersFromFiles()
     glUniform1i(glGetUniformLocation(g_GpuProgramID, "TextureImage1"), 1);
     glUniform1i(glGetUniformLocation(g_GpuProgramID, "TextureImage2"), 2);
     glUniform1i(glGetUniformLocation(g_GpuProgramID, "TextureImage3"), 3);
+    glUniform1i(glGetUniformLocation(g_GpuProgramID, "TextureImage4"), 4);
+    glUniform1i(glGetUniformLocation(g_GpuProgramID, "TextureImage5"), 5);
+    glUniform1i(glGetUniformLocation(g_GpuProgramID, "TextureImage6"), 6);
+    glUniform1i(glGetUniformLocation(g_GpuProgramID, "TextureImage7"), 7);
     glUseProgram(0);
 }
 
@@ -1456,7 +1452,7 @@ void MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
         if(projetilSpeed==0){
             projetilSpeed = 8;
             iniPos = glm::vec4(g_ProjetilPositionX,g_ProjetilPositionY,g_ProjetilPositionZ,1.0f);
-            direction = normalize(globalCamView);
+            direction = normalize((normalize(globalCamView)) + glm::vec4(0.0f,0.5f,0.0f,0.0f));
             timeTrown = timeElapsed;
         }
 
