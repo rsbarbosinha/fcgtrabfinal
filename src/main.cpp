@@ -148,6 +148,8 @@ void TextRendering_ShowEulerAngles(GLFWwindow* window);
 void TextRendering_ShowProjection(GLFWwindow* window);
 void TextRendering_ShowFramesPerSecond(GLFWwindow* window);
 
+void TextRendering_Score(GLFWwindow* window);
+
 // Funções callback para comunicação com o sistema operacional e interação do
 // usuário. Veja mais comentários nas definições das mesmas, abaixo.
 void FramebufferSizeCallback(GLFWwindow* window, int width, int height);
@@ -267,6 +269,8 @@ unsigned long timeTrown = 0;
 
 // Variáveis que controlam os Alvo
 AlvoData alvo[ALVOS];
+int score = 0; // Pontuação do jogador
+int alvosAtivos = 3;
 
 // Variavel de tempo
 unsigned long timeElapsed = 0;
@@ -485,6 +489,13 @@ int main(int argc, char* argv[])
                    alvo[i].alvoHalfX, alvo[i].alvoHalfY, alvo[i].alvoHalfZ)){
                     projetilSpeed = 0;
                     alvo[i].isOn = false;
+                    score += 100;
+                    alvosAtivos--;
+                    if (alvosAtivos == 0) {
+                        for (int i = 0; i < 3; i++)
+                                alvo[i].isOn = true;
+                        alvosAtivos = 3;
+                    }
                 }
             }
         }
@@ -753,6 +764,8 @@ int main(int argc, char* argv[])
         // Imprimimos na tela informação sobre o número de quadros renderizados
         // por segundo (frames per second).
         TextRendering_ShowFramesPerSecond(window);
+
+        TextRendering_Score(window);
 
         // O framebuffer onde OpenGL executa as operações de renderização não
         // é o mesmo que está sendo mostrado para o usuário, caso contrário
@@ -1733,6 +1746,18 @@ void TextRendering_ShowProjection(GLFWwindow* window)
         TextRendering_PrintString(window, "Perspective", 1.0f-13*charwidth, -1.0f+2*lineheight/10, 1.0f);
     else
         TextRendering_PrintString(window, "Orthographic", 1.0f-13*charwidth, -1.0f+2*lineheight/10, 1.0f);
+}
+
+void TextRendering_Score(GLFWwindow* window) {
+
+    float lineheight = TextRendering_LineHeight(window);
+    float charwidth = TextRendering_CharWidth(window);
+
+    static char  buffer[20];
+    sprintf(buffer, "%d pontos", score);
+    int numchars = strlen(buffer);
+
+    TextRendering_PrintString(window, buffer, -1.0f, 1.0f-lineheight, 1.0f);
 }
 
 // Escrevemos na tela o número de quadros renderizados por segundo (frames per
