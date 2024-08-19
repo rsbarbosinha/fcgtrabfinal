@@ -1001,12 +1001,12 @@ void Mov(unsigned long timeElapsed, GLFWwindow* window)
         		// pressionamento de W, simulando um deslocamento para frente.
         		g_Camforward += 0.1;
         	} else {
-            if(g_TorsoPositionZ<-2.5)
-            {
-                g_TorsoPositionZ += speed;
-                g_AngleLegX += 0.1f;
+                if(g_TorsoPositionZ<-2.5)
+                {
+                    g_TorsoPositionZ += speed;
+                    g_AngleLegX += 0.1f;
+                }
             }
-            	}
         }
         if(glfwGetKey(window,GLFW_KEY_S) == GLFW_PRESS)
         {
@@ -1015,12 +1015,12 @@ void Mov(unsigned long timeElapsed, GLFWwindow* window)
         		// pressionamento de W, simulando um deslocamento para frente.
         		g_Camforward -= 0.1;
         	} else {
-            if(g_TorsoPositionZ>-3.5)
-            {
-                g_TorsoPositionZ -= speed;
-                g_AngleLegX += 0.1f;
+                if(g_TorsoPositionZ>-3.5)
+                {
+                    g_TorsoPositionZ -= speed;
+                    g_AngleLegX += 0.1f;
+                }
             }
-            	}
         }
         if(glfwGetKey(window,GLFW_KEY_A) == GLFW_PRESS)
         {
@@ -1029,11 +1029,12 @@ void Mov(unsigned long timeElapsed, GLFWwindow* window)
         		// pressionamento de W, simulando um deslocamento para frente.
         		g_Camsideways -= 0.1;
         	} else {
-            if(g_TorsoPositionX<3.3)
-            {
-                g_TorsoPositionX += speed;
+                if(g_TorsoPositionX<3.3)
+                {
+                    g_TorsoPositionX += speed;
+                    g_AngleLegX += 0.1f;
+                }
             }
-            	}
         }
         if(glfwGetKey(window,GLFW_KEY_D) == GLFW_PRESS)
         {
@@ -1042,11 +1043,12 @@ void Mov(unsigned long timeElapsed, GLFWwindow* window)
         		// pressionamento de W, simulando um deslocamento para frente.
         		g_Camsideways += 0.1;
         	} else {
-            if(g_TorsoPositionX>-3.3)
-            {
-                g_TorsoPositionX -= speed;
+                if(g_TorsoPositionX>-3.3)
+                {
+                    g_TorsoPositionX -= speed;
+                    g_AngleLegX += 0.1f;
+                }
             }
-            	}
         }
         if(g_AngleLegX>1.2){g_AngleLegX=0;}
     }
