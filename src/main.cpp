@@ -1598,10 +1598,10 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mod)
         g_AngleX = 0.0f;
         g_AngleY = 0.0f;
         g_AngleZ = 0.0f;
-        g_ForearmAngleX = 0.0f;
+        /*g_ForearmAngleX = 0.0f;
         g_ForearmAngleZ = 0.0f;
         g_TorsoPositionX = 0.0f;
-        g_TorsoPositionY = 0.0f;
+        g_TorsoPositionY = 0.0f;*/
     }
 
     // Se o usuário apertar a tecla P, utilizamos projeção perspectiva.

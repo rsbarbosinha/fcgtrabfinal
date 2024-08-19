@@ -143,23 +143,23 @@ void main()
         float minz = bbox_min.z;
         float maxz = bbox_max.z;
 
-        if(position_model.z == maxz){
+        if(position_model.z + 0.001f >= maxz){
             U = (position_model.x - maxx)/-4*(maxx - minx) + 0.25;
             V = (position_model.y - maxy)/-2*(maxy - miny);
         }
-        else if(position_model.z == minz){
+        else if(position_model.z - 0.001f <= minz){
             U = (position_model.x - maxx)/-4*(maxx - minx) + 0.75;
             V = (position_model.y - maxy)/-2*(maxy - miny);
         }
-        else if(position_model.x == minx){
+        else if(position_model.x - 0.001f <= minx){
             U = (position_model.z - maxz)/-4*(maxz - minz) + 0.5;
             V = (position_model.y - maxy)/-2*(maxy - miny);
         }
-        else if(position_model.x == maxx){
+        else if(position_model.x + 0.001f >= maxx){
             U = (position_model.z - minz)/4*(maxz - minz) + 0.0;
             V = (position_model.y - maxy)/-2*(maxy - miny);
         }
-        else if(position_model.y == miny){
+        else if(position_model.y - 0.001f <= miny){
             U = (position_model.z - minz)/4*(maxz - minz) + 0.25;
             V = (position_model.x - maxx)/-2*(maxx - minx) + 0.5;
         }
@@ -179,19 +179,19 @@ void main()
         float minz = bbox_min.z;
         float maxz = bbox_max.z;
 
-        if(position_model.z == maxz){
+        if(position_model.z + 0.001f >= maxz){
             U = 2*(position_model.x - minx)/6*(maxx - minx) + 1.0/6;
             V = 3*(position_model.y - miny)/4*(maxy - miny);
         }
-        else if(position_model.z == minz){
+        else if(position_model.z - 0.001f <= minz){
             U = -2*(position_model.x - minx)/6*(maxx - minx) + 6.0/6;
             V = 3*(position_model.y - miny)/4*(maxy - miny);
         }
-        else if(position_model.x == minx){
+        else if(position_model.x - 0.001f <= minx){
             U = 1*(position_model.z - minz)/6*(maxz - minz) + 0.0/6;
             V = 3*(position_model.y - miny)/4*(maxy - miny);
         }
-        else if(position_model.x == maxx){
+        else if(position_model.x + 0.001f >= maxx){
             U = -1*(position_model.z - minz)/6*(maxz - minz) + 4.0/6;
             V = 3*(position_model.y - miny)/4*(maxy - miny);
         }
@@ -199,7 +199,7 @@ void main()
             U = 2*(position_model.x - minx)/6*(maxx - minx) + 1.0/6;
             V = 1*(position_model.z - minz)/4*(maxz - minz) + 3.0/4;
         }
-        else if(position_model.y == miny){
+        else if(position_model.y - 0.001f <= miny){
             U = 2*(position_model.x - minx)/6*(maxx - minx) + 3.0/6;
             V = 1*(position_model.z - minz)/4*(maxz - minz) + 3.0/4;
         }
@@ -215,19 +215,19 @@ void main()
         float minz = bbox_min.z;
         float maxz = bbox_max.z;
 
-        if(position_model.z == maxz){
+        if(position_model.z + 0.001f >= maxz){
             U = 1*(position_model.x - minx)/4*(maxx - minx) + 1.0/4;
             V = 3*(position_model.y - miny)/4*(maxy - miny);
         }
-        else if(position_model.z == minz){
+        else if(position_model.z - 0.001f <= minz){
             U = 1*(position_model.x - minx)/4*(maxx - minx) + 3.0/4;
             V = 3*(position_model.y - miny)/4*(maxy - miny);
         }
-        else if(position_model.x == minx){
+        else if(position_model.x - 0.001f <= minx){
             U = 1*(position_model.z - minz)/4*(maxz - minz) + 0.0/4;
             V = 3*(position_model.y - miny)/4*(maxy - miny);
         }
-        else if(position_model.x == maxx){
+        else if(position_model.x + 0.001f >= maxx){
             U = 1*(position_model.z - minz)/4*(maxz - minz) + 2.0/4;
             V = 3*(position_model.y - miny)/4*(maxy - miny);
         }
@@ -235,7 +235,7 @@ void main()
             U = 1*(position_model.x - minx)/4*(maxx - minx) + 1.0/4;
             V = 1*(position_model.z - minz)/4*(maxz - minz) + 3.0/4;
         }
-        else if(position_model.y == miny){
+        else if(position_model.y - 0.001f <= miny){
             U = 1*(position_model.x - minx)/4*(maxx - minx) + 2.0/4;
             V = 1*(position_model.z - minz)/4*(maxz - minz) + 3.0/4;
         }
@@ -251,29 +251,31 @@ void main()
         float minz = bbox_min.z;
         float maxz = bbox_max.z;
 
-        if(position_model.z == maxz){
+        if(position_model.z + 0.001f >= maxz){
             U = 1*(position_model.x - minx)/4*(maxx - minx) + 1.0/4;
             V = 1.5*(position_model.y - miny)/4*(maxy - miny) + 1.5/4;
         }
-        else if(position_model.z == minz){
+        else if(position_model.z - 0.001f <= minz){
             U = 1*(position_model.x - minx)/4*(maxx - minx) + 3.0/4;
             V = 1.5*(position_model.y - miny)/4*(maxy - miny) + 1.5/4;
         }
-        else if(position_model.x == minx){
+        else if(position_model.x - 0.001f <= minx){
             U = 1*(position_model.z - minz)/4*(maxz - minz) + 0.0/4;
             V = 1.5*(position_model.y - miny)/4*(maxy - miny) + 1.5/4;
         }
-        else if(position_model.x == maxx){
+        else if(position_model.x + 0.001f >= maxx){
             U = 1*(position_model.z - minz)/4*(maxz - minz) + 2.0/4;
             V = 1.5*(position_model.y - miny)/4*(maxy - miny) + 1.5/4;
         }
-        else if(position_model.y <= maxy +0.0001f && position_model.y >= maxy -0.0001f){
+        else if(position_model.y + 0.001f >= maxy){
             U = 1*(position_model.x - minx)/4*(maxx - minx) + 1.0/4;
             V = 1*(position_model.z - minz)/4*(maxz - minz) + 3.0/4;
         }
-        else if(position_model.y == miny){
+        else if(position_model.y - 0.001f <= miny){
             U = 1*(position_model.x - minx)/4*(maxx - minx) + 2.0/4;
             V = 1*(position_model.z - minz)/4*(maxz - minz) + 3.0/4;
+
+
         }
     }
     else if ( object_id == FARM)
@@ -287,27 +289,27 @@ void main()
         float minz = bbox_min.z;
         float maxz = bbox_max.z;
 
-        if(position_model.z == maxz){
+        if(position_model.z + 0.001f >= maxz){
             U = 1*(position_model.x - minx)/4*(maxx - minx) + 1.0/4;
             V = 1.5*(position_model.y - miny)/4*(maxy - miny);
         }
-        else if(position_model.z == minz){
+        else if(position_model.z - 0.001f <= minz){
             U = 1*(position_model.x - minx)/4*(maxx - minx) + 3.0/4;
             V = 1.5*(position_model.y - miny)/4*(maxy - miny);
         }
-        else if(position_model.x == minx){
+        else if(position_model.x - 0.001f <= minx){
             U = 1*(position_model.z - minz)/4*(maxz - minz) + 0.0/4;
             V = 1.5*(position_model.y - miny)/4*(maxy - miny);
         }
-        else if(position_model.x == maxx){
+        else if(position_model.x + 0.001f >= maxx){
             U = 1*(position_model.z - minz)/4*(maxz - minz) + 2.0/4;
             V = 1.5*(position_model.y - miny)/4*(maxy - miny);
         }
-        else if(position_model.y == maxy){
+        else if(position_model.y + 0.001f >= maxy){
             U = 1*(position_model.x - minx)/4*(maxx - minx) + 1.0/4;
             V = 1*(position_model.z - minz)/4*(maxz - minz) + 3.0/4;
         }
-        else if(position_model.y == miny){
+        else if(position_model.y - 0.001f <= miny){
             U = 1*(position_model.x - minx)/4*(maxx - minx) + 2.0/4;
             V = 1*(position_model.z - minz)/4*(maxz - minz) + 3.0/4;
         }
