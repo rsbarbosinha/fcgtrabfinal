@@ -488,12 +488,12 @@ int main(int argc, char* argv[])
                 }
             }
         }
-        
+
         glm::vec4 camera_position_c;
         glm::vec4 camera_lookat_l;
         glm::vec4 camera_view_vector;
         glm::vec4 camera_up_vector;
-        
+
         if(g_CameraFree){
         	// Computamos a posição da câmera utilizando coordenadas esféricas.  As
         	// variáveis g_CameraDistance, g_CameraPhi, e g_CameraTheta são
@@ -791,11 +791,11 @@ void Mov(unsigned long timeElapsed, GLFWwindow* window)
         		g_Camforward += 0.1;
         	} else {
             if(g_TorsoPositionZ<-2.0)
-            {
-                g_TorsoPositionZ += speed;
-                g_AngleLegX += 0.1f;
+                {
+                    g_TorsoPositionZ += speed;
+                    g_AngleLegX += 0.1f;
+                }
             }
-            	}
         }
         if(glfwGetKey(window,GLFW_KEY_S) == GLFW_PRESS)
         {
@@ -804,12 +804,12 @@ void Mov(unsigned long timeElapsed, GLFWwindow* window)
         		// pressionamento de W, simulando um deslocamento para frente.
         		g_Camforward -= 0.1;
         	} else {
-            if(g_TorsoPositionZ>-4.0)
-            {
-                g_TorsoPositionZ -= speed;
-                g_AngleLegX += 0.1f;
+                if(g_TorsoPositionZ>-4.0)
+                {
+                    g_TorsoPositionZ -= speed;
+                    g_AngleLegX += 0.1f;
+                }
             }
-            	}
         }
         if(glfwGetKey(window,GLFW_KEY_A) == GLFW_PRESS)
         {
@@ -818,11 +818,12 @@ void Mov(unsigned long timeElapsed, GLFWwindow* window)
         		// pressionamento de W, simulando um deslocamento para frente.
         		g_Camsideways -= 0.1;
         	} else {
-            if(g_TorsoPositionX<2.0)
-            {
-                g_TorsoPositionX += speed;
+                if(g_TorsoPositionX<2.0)
+                {
+                    g_TorsoPositionX += speed;
+                    g_AngleLegX += 0.1;
+                }
             }
-            	}
         }
         if(glfwGetKey(window,GLFW_KEY_D) == GLFW_PRESS)
         {
@@ -831,11 +832,12 @@ void Mov(unsigned long timeElapsed, GLFWwindow* window)
         		// pressionamento de W, simulando um deslocamento para frente.
         		g_Camsideways += 0.1;
         	} else {
-            if(g_TorsoPositionX>-2.0)
-            {
-                g_TorsoPositionX -= speed;
+                if(g_TorsoPositionX>-2.0)
+                {
+                    g_TorsoPositionX -= speed;
+                    g_AngleLegX += 0.1;
+                }
             }
-            	}
         }
         if(g_AngleLegX>1.2){g_AngleLegX=0;}
     }
@@ -1627,7 +1629,7 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mod)
         fprintf(stdout,"Shaders recarregados!\n");
         fflush(stdout);
     }
-    
+
     // Se o usuário apertar a tecla C, utilizamos camera free.
     if (key == GLFW_KEY_C && action == GLFW_PRESS)
     {

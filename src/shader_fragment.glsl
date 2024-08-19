@@ -166,7 +166,7 @@ void main()
         else if(position_model.y <= maxy +0.0001f && position_model.y >= maxy -0.0001f){
             U = (position_model.z - maxz)/-4*(maxz - minz) + 0.5;
             V = (position_model.x - maxx)/-2*(maxx - minx) + 0.5;
-        }        
+        }
     }
     else if ( object_id == BODY)
     {
@@ -202,7 +202,7 @@ void main()
         else if(position_model.y == miny){
             U = 2*(position_model.x - minx)/6*(maxx - minx) + 3.0/6;
             V = 1*(position_model.z - minz)/4*(maxz - minz) + 3.0/4;
-        }        
+        }
     }
     else if ( object_id == LEG)
     {
@@ -238,7 +238,7 @@ void main()
         else if(position_model.y == miny){
             U = 1*(position_model.x - minx)/4*(maxx - minx) + 2.0/4;
             V = 1*(position_model.z - minz)/4*(maxz - minz) + 3.0/4;
-        }        
+        }
     }
     else if ( object_id == UARM)
     {
@@ -274,7 +274,7 @@ void main()
         else if(position_model.y == miny){
             U = 1*(position_model.x - minx)/4*(maxx - minx) + 2.0/4;
             V = 1*(position_model.z - minz)/4*(maxz - minz) + 3.0/4;
-        }        
+        }
     }
     else if ( object_id == FARM)
     {
@@ -310,7 +310,7 @@ void main()
         else if(position_model.y == miny){
             U = 1*(position_model.x - minx)/4*(maxx - minx) + 2.0/4;
             V = 1*(position_model.z - minz)/4*(maxz - minz) + 3.0/4;
-        }        
+        }
     }
 
     // Obtemos a refletância difusa a partir da leitura da imagem TextureImage
