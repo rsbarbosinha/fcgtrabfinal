@@ -478,7 +478,7 @@ int main(int argc, char* argv[])
     ObjModel numbs9("../../data/numbs9.obj");
     ComputeNormals(&numbs9);
     BuildTrianglesAndAddToVirtualScene(&numbs9);
-    
+
     ObjModel clouds("../../data/clouds.obj");
     ComputeNormals(&clouds);
     BuildTrianglesAndAddToVirtualScene(&clouds);
@@ -566,7 +566,7 @@ int main(int argc, char* argv[])
         MovCubicBezier(timeElapsed);
 
         MovPend(timeElapsed);
-        
+
         float planeNormalX = 0.0f;
         float planeNormalY = 1.0f;
         float planeNormalZ = 0.0f;
@@ -600,12 +600,12 @@ int main(int argc, char* argv[])
                 }
             }
         }
-        
+
         glm::vec4 camera_position_c;
         glm::vec4 camera_lookat_l;
         glm::vec4 camera_view_vector;
         glm::vec4 camera_up_vector;
-        
+
         if(g_CameraFree){
         	// Computamos a posição da câmera utilizando coordenadas esféricas.  As
         	// variáveis g_CameraDistance, g_CameraPhi, e g_CameraTheta são
@@ -617,9 +617,9 @@ int main(int argc, char* argv[])
 
         	// Abaixo definimos as varáveis que efetivamente definem a câmera virtual.
         	// Veja slides 195-227 e 229-234 do documento Aula_08_Sistemas_de_Coordenadas.pdf.
-        	camera_position_c  = glm::vec4(g_Camx,g_Camy,g_Camz,1.0f); // Ponto "c", centro da câmera
+
         	camera_view_vector   = glm::vec4(vx,vy,vz,0.0f); // Vetor "view", sentido para onde a câmera está virada
-		camera_view_vector = camera_view_vector/norm(camera_view_vector);
+            camera_view_vector = camera_view_vector/norm(camera_view_vector);
         	g_Camx += g_Camforward*camera_view_vector.x;
         	g_Camy += g_Camforward*camera_view_vector.y;
         	g_Camz += g_Camforward*camera_view_vector.z;
@@ -629,6 +629,8 @@ int main(int argc, char* argv[])
         	//g_Camy += g_Camsideways*(crossproduct(camera_view_vector,camera_up_vector)).y;
         	g_Camz += g_Camsideways*(crossproduct(camera_view_vector,camera_up_vector)).z;
         	g_Camsideways=0;
+
+        	camera_position_c  = glm::vec4(g_Camx,g_Camy,g_Camz,1.0f); // Ponto "c", centro da câmera
         } else{
         	// Computamos a posição da câmera utilizando coordenadas esféricas.  As
         	// variáveis g_CameraDistance, g_CameraPhi, e g_CameraTheta são
@@ -825,9 +827,9 @@ int main(int argc, char* argv[])
                 DrawVirtualObject("the_duck");
             }
             if(alvoB[i].isBOn){
-                // Desenhamos o modelo do balloonmodel 
+                // Desenhamos o modelo do balloonmodel
         model = Matrix_Translate(alvoB[i].alvoBCenterX,alvoB[i].alvoBCenterY,alvoB[i].alvoBCenterZ)
-              * Matrix_Rotate_Z((M_PI_2/4)*(cos(0.003f*timeElapsed))) 
+              * Matrix_Rotate_Z((M_PI_2/4)*(cos(0.003f*timeElapsed)))
               * Matrix_Translate(0.0f,2.0f,0.0f)
               * Matrix_Rotate_Z(M_PI)
               * Matrix_Rotate_X(M_PI_2)
@@ -1847,11 +1849,20 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mod)
         fprintf(stdout,"Shaders recarregados!\n");
         fflush(stdout);
     }
-    
+
     // Se o usuário apertar a tecla C, utilizamos camera free.
     if (key == GLFW_KEY_C && action == GLFW_PRESS)
     {
         g_CameraFree = !g_CameraFree;
+
+        if (g_CameraFree) {
+            g_CameraTheta = 0.785f;
+            g_CameraPhi = 0;
+            g_CameraDistance = 2.5f;
+            g_Camx = 0.0f;
+            g_Camy = 1.0f;
+            g_Camz = -5.0f;
+        }
     }
 }
 
