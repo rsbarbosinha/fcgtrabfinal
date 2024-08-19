@@ -163,11 +163,26 @@ void Mov(unsigned long timeElapsed, GLFWwindow* window);
 // Funcao para movimentação do projetil
 void MovProjetil(unsigned long timeElapsed);
 
+// Funcao para movimentação do balao
+void MovPend(unsigned long timeElapsed);
+
 // Function to check if a sphere and a box are colliding
 bool isCollidingSB(float g_ProjetilPositionX, float g_ProjetilPositionY, float g_ProjetilPositionZ,
                    float projRadius,
                    float alvoPositionX, float alvoPositionY, float alvoPositionZ,
                    float alvoHalfX, float alvoHalfY, float alvoHalfZ);
+
+// Function to check if a sphere and another sphere are colliding
+bool isCollidingSS(float g_ProjetilPositionX, float g_ProjetilPositionY, float g_ProjetilPositionZ,
+                   float projRadius,
+                   float alvoBPositionX, float alvoBPositionY, float alvoBPositionZ,
+                   float alvoBRadius);
+
+// Function to check if a sphere and a plane are colliding
+bool isCollidingSP(float g_ProjetilPositionX, float g_ProjetilPositionY, float g_ProjetilPositionZ,
+                   float projRadius,
+                   float planeNormalX, float planeNormalY, float planeNormalZ,
+                   float planePointX, float planePointY, float planePointZ);
 
 // Funcao para movimentar um ponto numa curva de Bezier cubica
 void MovCubicBezier(unsigned long timeElapsed);
@@ -186,6 +201,19 @@ struct AlvoData
     glm::vec4 bezierP2;
     glm::vec4 bezierP3;
     bool isOn;
+};
+
+// Definimos uma estrutura que armazenará dados sobre cada alvo paralelepipidico
+struct AlvoBData
+{
+    float alvoBPositionX;
+    float alvoBPositionY;
+    float alvoBPositionZ;
+    float alvoBCenterX;
+    float alvoBCenterY;
+    float alvoBCenterZ;
+    float alvoBRadius;
+    bool isBOn;
 };
 
 // Definimos uma estrutura que armazenará dados necessários para renderizar
@@ -267,6 +295,12 @@ unsigned long timeTrown = 0;
 
 // Variáveis que controlam os Alvo
 AlvoData alvo[ALVOS];
+AlvoBData alvoB[ALVOS];
+
+char    numbs[10][10] = {"the_zero","the_one","the_two","the_three","the_four"
+                        ,"the_five","the_six","the_seven","the_eight","the_nine"};
+
+int timeScore = 0;
 
 // Variavel de tempo
 unsigned long timeElapsed = 0;
@@ -371,6 +405,11 @@ int main(int argc, char* argv[])
     LoadTextureImage("../../data/body.jpg"); // TextureImage5
     LoadTextureImage("../../data/leg.jpg"); // TextureImage6
     LoadTextureImage("../../data/arm.jpg"); // TextureImage7
+    LoadTextureImage("../../data/waves.png"); // TextureImage8
+    LoadTextureImage("../../data/stand.png"); // TextureImage9
+    LoadTextureImage("../../data/balloon.png"); // TextureImage10
+    LoadTextureImage("../../data/silver.jpg"); // TextureImage11
+    LoadTextureImage("../../data/clouds.png"); // TextureImage12
 
     // Construímos a representação de objetos geométricos através de malhas de triângulos
     ObjModel spheremodel("../../data/sphere.obj");
@@ -393,41 +432,90 @@ int main(int argc, char* argv[])
     ComputeNormals(&duck);
     BuildTrianglesAndAddToVirtualScene(&duck);
 
-    ObjModel fence("../../data/fence.obj");
-    ComputeNormals(&fence);
-    BuildTrianglesAndAddToVirtualScene(&fence);
+    //ObjModel fence("../../data/fence.obj");
+    //ComputeNormals(&fence);
+    //BuildTrianglesAndAddToVirtualScene(&fence);
+
+    ObjModel waves("../../data/waves.obj");
+    ComputeNormals(&waves);
+    BuildTrianglesAndAddToVirtualScene(&waves);
+
+    ObjModel stand("../../data/stand.obj");
+    ComputeNormals(&stand);
+    BuildTrianglesAndAddToVirtualScene(&stand);
+
+    ObjModel balloon("../../data/balloon.obj");
+    ComputeNormals(&balloon);
+    BuildTrianglesAndAddToVirtualScene(&balloon);
+
+    ObjModel numbs0("../../data/numbs0.obj");
+    ComputeNormals(&numbs0);
+    BuildTrianglesAndAddToVirtualScene(&numbs0);
+    ObjModel numbs1("../../data/numbs1.obj");
+    ComputeNormals(&numbs1);
+    BuildTrianglesAndAddToVirtualScene(&numbs1);
+    ObjModel numbs2("../../data/numbs2.obj");
+    ComputeNormals(&numbs2);
+    BuildTrianglesAndAddToVirtualScene(&numbs2);
+    ObjModel numbs3("../../data/numbs3.obj");
+    ComputeNormals(&numbs3);
+    BuildTrianglesAndAddToVirtualScene(&numbs3);
+    ObjModel numbs4("../../data/numbs4.obj");
+    ComputeNormals(&numbs4);
+    BuildTrianglesAndAddToVirtualScene(&numbs4);
+    ObjModel numbs5("../../data/numbs5.obj");
+    ComputeNormals(&numbs5);
+    BuildTrianglesAndAddToVirtualScene(&numbs5);
+    ObjModel numbs6("../../data/numbs6.obj");
+    ComputeNormals(&numbs6);
+    BuildTrianglesAndAddToVirtualScene(&numbs6);
+    ObjModel numbs7("../../data/numbs7.obj");
+    ComputeNormals(&numbs7);
+    BuildTrianglesAndAddToVirtualScene(&numbs7);
+    ObjModel numbs8("../../data/numbs8.obj");
+    ComputeNormals(&numbs8);
+    BuildTrianglesAndAddToVirtualScene(&numbs8);
+    ObjModel numbs9("../../data/numbs9.obj");
+    ComputeNormals(&numbs9);
+    BuildTrianglesAndAddToVirtualScene(&numbs9);
+    
+    ObjModel clouds("../../data/clouds.obj");
+    ComputeNormals(&clouds);
+    BuildTrianglesAndAddToVirtualScene(&clouds);
 
     for(int i = 0; i < ALVOS; i++){
-        alvo[i].alvoPositionX = -2.0f;
-        alvo[i].alvoPositionY = 1.2f;
-        alvo[i].alvoPositionZ = 1.0f;
         alvo[i].alvoHalfX = 0.15f;
         alvo[i].alvoHalfY = 0.15f;
         alvo[i].alvoHalfZ = 0.05f;
-        alvo[i].bezierP0.x = -2.0f;
-        alvo[i].bezierP0.y = 1.2f;
-        alvo[i].bezierP0.z = 1.0f;
-        alvo[i].bezierP1.x = -1.0f;
-        alvo[i].bezierP1.y = 3.2f;
-        alvo[i].bezierP1.z = 1.0f;
-        alvo[i].bezierP2.x = 0.0f;
-        alvo[i].bezierP2.y = -0.8f;
-        alvo[i].bezierP2.z = 1.0f;
-        alvo[i].bezierP3.x = 1.0f;
-        alvo[i].bezierP3.y = 1.2f;
-        alvo[i].bezierP3.z = 1.0f;
+        alvo[i].bezierP0.x = -3.5f;
+        alvo[i].bezierP0.y = 1.0f;
+        alvo[i].bezierP0.z = 0.4f;
+        alvo[i].bezierP1.x = -2.5f;
+        alvo[i].bezierP1.y = 1.8f;
+        alvo[i].bezierP1.z = 0.4f;
+        alvo[i].bezierP2.x = -1.5f;
+        alvo[i].bezierP2.y = 0.2f;
+        alvo[i].bezierP2.z = 0.4f;
+        alvo[i].bezierP3.x = -0.5f;
+        alvo[i].bezierP3.y = 1.0f;
+        alvo[i].bezierP3.z = 0.4f;
         alvo[i].isOn = true;
+        alvoB[i].alvoBCenterX = -2.5f;
+        alvoB[i].alvoBCenterY = 0.0f;
+        alvoB[i].alvoBCenterZ = 1.0f;
+        alvoB[i].alvoBRadius = 0.15f;
+        alvoB[i].isBOn = true;
     }
-    alvo[0].alvoPositionX += 1.0;
-    alvo[0].bezierP0.x += 1.0;
-    alvo[0].bezierP1.x += 1.0;
-    alvo[0].bezierP2.x += 1.0;
-    alvo[0].bezierP3.x += 1.0;
-    alvo[1].alvoPositionX += 2.0;
+    alvo[0].bezierP0.x += 4.0;
+    alvo[0].bezierP1.x += 4.0;
+    alvo[0].bezierP2.x += 4.0;
+    alvo[0].bezierP3.x += 4.0;
     alvo[1].bezierP0.x += 2.0;
     alvo[1].bezierP1.x += 2.0;
     alvo[1].bezierP2.x += 2.0;
     alvo[1].bezierP3.x += 2.0;
+    alvoB[0].alvoBCenterX += 5.0f;
+    alvoB[1].alvoBCenterX += 2.5f;
 
 
     if ( argc > 1 )
@@ -477,6 +565,21 @@ int main(int argc, char* argv[])
 
         MovCubicBezier(timeElapsed);
 
+        MovPend(timeElapsed);
+        
+        float planeNormalX = 0.0f;
+        float planeNormalY = 1.0f;
+        float planeNormalZ = 0.0f;
+        float planePointX = 0.0f;
+        float planePointY = 0.0f;
+        float planePointZ = 0.0f;
+        if(isCollidingSP(g_ProjetilPositionX,g_ProjetilPositionY,g_ProjetilPositionZ,
+                   projRadius,
+                   planeNormalX, planeNormalY, planeNormalZ,
+                   planePointX, planePointY, planePointZ)){
+                    projetilSpeed = 0;
+            }
+
         for(int i = 0; i < ALVOS; i++){
             if(alvo[i].isOn){
                 if(isCollidingSB(g_ProjetilPositionX, g_ProjetilPositionY, g_ProjetilPositionZ,
@@ -485,6 +588,15 @@ int main(int argc, char* argv[])
                    alvo[i].alvoHalfX, alvo[i].alvoHalfY, alvo[i].alvoHalfZ)){
                     projetilSpeed = 0;
                     alvo[i].isOn = false;
+                }
+            }
+            if(alvoB[i].isBOn){
+                if(isCollidingSS(g_ProjetilPositionX, g_ProjetilPositionY, g_ProjetilPositionZ,
+                   projRadius,
+                   alvoB[i].alvoBPositionX, alvoB[i].alvoBPositionY, alvoB[i].alvoBPositionZ,
+                   alvoB[i].alvoBRadius)){
+                    projetilSpeed = 0;
+                    alvoB[i].isBOn = false;
                 }
             }
         }
@@ -578,17 +690,22 @@ int main(int argc, char* argv[])
         glUniformMatrix4fv(g_view_uniform       , 1 , GL_FALSE , glm::value_ptr(view));
         glUniformMatrix4fv(g_projection_uniform , 1 , GL_FALSE , glm::value_ptr(projection));
 
-        #define SPHERE 0
-        #define BUNNY  1
-        #define PLANE  2
-        #define CUBE   3
-        #define FENCE  4
-        #define DUCK   5
-        #define HEAD   6
-        #define BODY   7
-        #define LEG    8
-        #define UARM   9
-        #define FARM  10
+        #define SPHERE  0
+        #define BUNNY   1
+        #define PLANE   2
+        #define CUBE    3
+        #define FENCE   4
+        #define DUCK    5
+        #define HEAD    6
+        #define BODY    7
+        #define LEG     8
+        #define UARM    9
+        #define FARM    10
+        #define WAVE    11
+        #define STAND   12
+        #define BALLOON 13
+        #define NUMB    14
+        #define CLOUDS  15
 
         // Desenhamos o modelo da esfera
         model = Matrix_Translate(g_ProjetilPositionX, g_ProjetilPositionY, g_ProjetilPositionZ)
@@ -596,6 +713,50 @@ int main(int argc, char* argv[])
         glUniformMatrix4fv(g_model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
         glUniform1i(g_object_id_uniform, SPHERE);
         DrawVirtualObject("the_sphere");
+
+        int alvoscount = 0;
+        int firstDigi;
+        int seconDigi;
+        int thirdDigi;
+        for (int i = 0; i < ALVOS; i++){
+            if(alvo[i].isOn){alvoscount+=1;}
+            if(alvoB[i].isBOn){alvoscount+=1;}
+        }
+        if (!alvoscount){
+            if(timeScore == 0){
+                timeScore = timeElapsed;
+                timeScore = timeScore/1000;
+                thirdDigi = (timeScore/1)%10;
+                seconDigi = (timeScore/10)%10;
+                firstDigi = (timeScore/100)%10;
+            }
+        // Desenhamos o modelo do numero1
+        model = Matrix_Translate(2.0f,2.0f,3.0f)
+              * Matrix_Rotate_X(-M_PI_2)
+              * Matrix_Rotate_Z(M_PI)
+              * Matrix_Scale(0.02f, 0.02f, 0.02f);
+        glUniformMatrix4fv(g_model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(g_object_id_uniform, NUMB);
+        DrawVirtualObject(numbs[firstDigi]);
+
+        // Desenhamos o modelo do numero2
+        model = Matrix_Translate(0.0f,2.0f,3.0f)
+              * Matrix_Rotate_X(-M_PI_2)
+              * Matrix_Rotate_Z(M_PI)
+              * Matrix_Scale(0.02f, 0.02f, 0.02f);
+        glUniformMatrix4fv(g_model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(g_object_id_uniform, NUMB);
+        DrawVirtualObject(numbs[seconDigi]);
+
+        // Desenhamos o modelo do numero3
+        model = Matrix_Translate(-2.0f,2.0f,3.0f)
+              * Matrix_Rotate_X(-M_PI_2)
+              * Matrix_Rotate_Z(M_PI)
+              * Matrix_Scale(0.02f, 0.02f, 0.02f);
+        glUniformMatrix4fv(g_model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(g_object_id_uniform, NUMB);
+        DrawVirtualObject(numbs[thirdDigi]);
+        }
 
         // Desenhamos o modelo do coelho
         //model = Matrix_Translate(1.0f,0.0f,0.0f)
@@ -618,14 +779,62 @@ int main(int argc, char* argv[])
         glUniform1i(g_object_id_uniform, PLANE);
         DrawVirtualObject("the_plane");
 
+        // Desenhamos o plano do wave
+        model = Matrix_Translate(-1.7f,0.6f,0.0f)
+              * Matrix_Scale(1.0f, 1.0f, 1.0f);
+        glUniformMatrix4fv(g_model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(g_object_id_uniform, WAVE);
+        DrawVirtualObject("the_waves");
+        model = Matrix_Translate(1.7f,0.6f,0.001f)
+              * Matrix_Scale(1.0f, 1.0f, 1.0f);
+        glUniformMatrix4fv(g_model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(g_object_id_uniform, WAVE);
+        DrawVirtualObject("the_waves");
+
+        // Desenhamos o plano do clouds
+        model = Matrix_Translate(-1.95f,0.9f,0.7f)
+              * Matrix_Scale(1.0f, 1.0f, 1.0f);
+        glUniformMatrix4fv(g_model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(g_object_id_uniform, CLOUDS);
+        DrawVirtualObject("the_clouds");
+        model = Matrix_Translate(1.95f,0.9f,0.701f)
+              * Matrix_Scale(1.0f, 1.0f, 1.0f);
+        glUniformMatrix4fv(g_model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(g_object_id_uniform, CLOUDS);
+        DrawVirtualObject("the_clouds");
+
+        // Desenhamos o plano do stand
+        model = Matrix_Translate(-2.0f,0.6f,-1.7f)
+              * Matrix_Scale(1.0f, 1.0f, 1.0f);
+        glUniformMatrix4fv(g_model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(g_object_id_uniform, STAND);
+        DrawVirtualObject("the_stand");
+        model = Matrix_Translate(2.0f,0.6f,-1.701f)
+              * Matrix_Scale(1.0f, 1.0f, 1.0f);
+        glUniformMatrix4fv(g_model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(g_object_id_uniform, STAND);
+        DrawVirtualObject("the_stand");
+
         for(int i = 0; i < ALVOS; i++){
             if(alvo[i].isOn){
-                // Desenhamos o modelo do coelho1
+                // Desenhamos o modelo do pato
                 model = Matrix_Translate(alvo[i].alvoPositionX,alvo[i].alvoPositionY,alvo[i].alvoPositionZ)
                 * Matrix_Scale(alvo[i].alvoHalfX*2, alvo[i].alvoHalfY*2, alvo[i].alvoHalfZ*2);
                 glUniformMatrix4fv(g_model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
                 glUniform1i(g_object_id_uniform, DUCK);
                 DrawVirtualObject("the_duck");
+            }
+            if(alvoB[i].isBOn){
+                // Desenhamos o modelo do balloonmodel 
+        model = Matrix_Translate(alvoB[i].alvoBCenterX,alvoB[i].alvoBCenterY,alvoB[i].alvoBCenterZ)
+              * Matrix_Rotate_Z((M_PI_2/4)*(cos(0.003f*timeElapsed))) 
+              * Matrix_Translate(0.0f,2.0f,0.0f)
+              * Matrix_Rotate_Z(M_PI)
+              * Matrix_Rotate_X(M_PI_2)
+              * Matrix_Scale(0.001f, 0.001f, 0.001f);
+        glUniformMatrix4fv(g_model_uniform, 1 , GL_FALSE , glm::value_ptr(model));
+        glUniform1i(g_object_id_uniform, BALLOON);
+        DrawVirtualObject("the_balloon");
             }
         }
 
@@ -790,7 +999,7 @@ void Mov(unsigned long timeElapsed, GLFWwindow* window)
         		// pressionamento de W, simulando um deslocamento para frente.
         		g_Camforward += 0.1;
         	} else {
-            if(g_TorsoPositionZ<-2.0)
+            if(g_TorsoPositionZ<-2.5)
             {
                 g_TorsoPositionZ += speed;
                 g_AngleLegX += 0.1f;
@@ -804,7 +1013,7 @@ void Mov(unsigned long timeElapsed, GLFWwindow* window)
         		// pressionamento de W, simulando um deslocamento para frente.
         		g_Camforward -= 0.1;
         	} else {
-            if(g_TorsoPositionZ>-4.0)
+            if(g_TorsoPositionZ>-3.5)
             {
                 g_TorsoPositionZ -= speed;
                 g_AngleLegX += 0.1f;
@@ -818,7 +1027,7 @@ void Mov(unsigned long timeElapsed, GLFWwindow* window)
         		// pressionamento de W, simulando um deslocamento para frente.
         		g_Camsideways -= 0.1;
         	} else {
-            if(g_TorsoPositionX<2.0)
+            if(g_TorsoPositionX<3.3)
             {
                 g_TorsoPositionX += speed;
             }
@@ -831,7 +1040,7 @@ void Mov(unsigned long timeElapsed, GLFWwindow* window)
         		// pressionamento de W, simulando um deslocamento para frente.
         		g_Camsideways += 0.1;
         	} else {
-            if(g_TorsoPositionX>-2.0)
+            if(g_TorsoPositionX>-3.3)
             {
                 g_TorsoPositionX -= speed;
             }
@@ -853,9 +1062,15 @@ void MovProjetil(unsigned long timeElapsed){
         g_ProjetilPositionX = iniPos.x + (projetilSpeed * direction.x * sElapsedInAir * 0.001);
         g_ProjetilPositionY = iniPos.y + (projetilSpeed * direction.y * sElapsedInAir * 0.001) - (0.5 * 9.8 * sElapsedInAir * 0.001 * sElapsedInAir * 0.001);
         g_ProjetilPositionZ = iniPos.z + (projetilSpeed * direction.z * sElapsedInAir * 0.001);
-        if (g_ProjetilPositionY < 0.05){
-            projetilSpeed = 0;
-        }
+    }
+}
+
+// Funcao para movimentação do balao
+void MovPend(unsigned long timeElapsed){
+    for(int i = 0; i < ALVOS; i++){
+        alvoB[i].alvoBPositionX = alvoB[i].alvoBCenterX + -2.0*(sin(((M_PI_2/4)*(cos(0.003f*timeElapsed)))));
+        alvoB[i].alvoBPositionY = alvoB[i].alvoBCenterY + 2.0*(cos(((M_PI_2/4)*(cos(0.003f*timeElapsed)))));;
+        alvoB[i].alvoBPositionZ = alvoB[i].alvoBCenterZ;
     }
 }
 
@@ -1032,6 +1247,11 @@ void LoadShadersFromFiles()
     glUniform1i(glGetUniformLocation(g_GpuProgramID, "TextureImage5"), 5);
     glUniform1i(glGetUniformLocation(g_GpuProgramID, "TextureImage6"), 6);
     glUniform1i(glGetUniformLocation(g_GpuProgramID, "TextureImage7"), 7);
+    glUniform1i(glGetUniformLocation(g_GpuProgramID, "TextureImage8"), 8);
+    glUniform1i(glGetUniformLocation(g_GpuProgramID, "TextureImage9"), 9);
+    glUniform1i(glGetUniformLocation(g_GpuProgramID, "TextureImage10"), 10);
+    glUniform1i(glGetUniformLocation(g_GpuProgramID, "TextureImage11"), 11);
+    glUniform1i(glGetUniformLocation(g_GpuProgramID, "TextureImage12"), 12);
     glUseProgram(0);
 }
 

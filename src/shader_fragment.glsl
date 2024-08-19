@@ -19,17 +19,22 @@ uniform mat4 view;
 uniform mat4 projection;
 
 // Identificador que define qual objeto está sendo desenhado no momento
-#define SPHERE 0
-#define BUNNY  1
-#define PLANE  2
-#define CUBE   3
-#define FENCE  4
-#define DUCK   5
-#define HEAD   6
-#define BODY   7
-#define LEG    8
-#define UARM   9
-#define FARM  10
+#define SPHERE  0
+#define BUNNY   1
+#define PLANE   2
+#define CUBE    3
+#define FENCE   4
+#define DUCK    5
+#define HEAD    6
+#define BODY    7
+#define LEG     8
+#define UARM    9
+#define FARM    10
+#define WAVE    11
+#define STAND   12
+#define BALLOON 13
+#define NUMB    14
+#define CLOUDS  15
 uniform int object_id;
 
 // Parâmetros da axis-aligned bounding box (AABB) do modelo
@@ -45,6 +50,11 @@ uniform sampler2D TextureImage4;
 uniform sampler2D TextureImage5;
 uniform sampler2D TextureImage6;
 uniform sampler2D TextureImage7;
+uniform sampler2D TextureImage8;
+uniform sampler2D TextureImage9;
+uniform sampler2D TextureImage10;
+uniform sampler2D TextureImage11;
+uniform sampler2D TextureImage12;
 
 // O valor de saída ("out") de um Fragment Shader é a cor final do fragmento.
 out vec4 color;
@@ -77,6 +87,20 @@ void main()
     // Vetor que define o sentido da câmera em relação ao ponto atual.
     vec4 v = normalize(camera_position - p);
 
+    // Vetor que define o sentido da reflexão especular ideal.
+    vec4 r = normalize(vec4(-l.x+2*n.x*dot(n,l),
+                            -l.y+2*n.y*dot(n,l),
+                            -l.z+2*n.z*dot(n,l),
+                            0.0));//(-l+(2*n*dot(n,l))); 
+    //PREENCHA AQUI o vetor de reflexão especular ideal r = -l +2n (n.l) (dotproduct(n,l))
+
+    // Parâmetros que definem as propriedades espectrais da superfície
+    vec3 Kd; // Refletância difusa
+    vec3 Ks; // Refletância especular
+    vec3 Ka; // Refletância ambiente
+    float q; // Expoente especular para o modelo de iluminação de Phong
+
+
     // Coordenadas de textura U e V
     float U = 0.0;
     float V = 0.0;
@@ -103,7 +127,8 @@ void main()
         U = (atan(psphere.x,psphere.z) + M_PI) / (2 * M_PI);
         V = (asin(psphere.y) + M_PI_2) / M_PI;
     }
-    else if ( object_id == BUNNY || object_id == FENCE || object_id == CUBE || object_id == DUCK)
+    else if ( object_id == BUNNY || object_id == FENCE || object_id == CUBE 
+    || object_id == DUCK || object_id == WAVE || object_id == STAND || object_id == CLOUDS )
     {
         // PREENCHA AQUI as coordenadas de textura do coelho, computadas com
         // projeção planar XY em COORDENADAS DO MODELO. Utilize como referência
@@ -312,42 +337,126 @@ void main()
             V = 1*(position_model.z - minz)/4*(maxz - minz) + 3.0/4;
         }        
     }
+    else if ( object_id == BALLOON || object_id == NUMB )
+    {
+        float minx = bbox_min.x;
+        float maxx = bbox_max.x;
+
+        float miny = bbox_min.y;
+        float maxy = bbox_max.y;
+
+        float minz = bbox_min.z;
+        float maxz = bbox_max.z;
+
+        U = (position_model.x - minx)/(maxx - minx);
+        V = (position_model.z - minz)/(maxz - minz);
+    }
 
     // Obtemos a refletância difusa a partir da leitura da imagem TextureImage
-    vec3 Kd0;
 
     if ( object_id == SPHERE ){
-        Kd0 = texture(TextureImage0, vec2(U,V)).rgb;
+        Kd = texture(TextureImage0, vec2(U,V)).rgb;
+        Ks = vec3(0.3, 0.3, 0.3);
+        Ka = Kd/2;
+        q = 20.0;
     }
     else if ( object_id == CUBE ){
-        Kd0 = texture(TextureImage3, vec2(U,V)).rgb;
+        Kd = texture(TextureImage3, vec2(U,V)).rgb;
+        Ks = vec3(0.3, 0.3, 0.3);
+        Ka = Kd/2;
+        q = 20.0;
     }
     else if ( object_id == FENCE ){
-        Kd0 = texture(TextureImage3, vec2(U,V)).rgb;
+        Kd = texture(TextureImage3, vec2(U,V)).rgb;
+        Ks = vec3(0.3, 0.3, 0.3);
+        Ka = Kd/2;
+        q = 20.0;
     }
     else if ( object_id == PLANE ){
-        Kd0 = texture(TextureImage1, vec2(U,V)).rgb;
+        Kd = texture(TextureImage1, vec2(U,V)).rgb;
+        Ks = vec3(0.3, 0.3, 0.3);
+        Ka = Kd/2;
+        q = 20.0;
     }
     else if ( object_id == DUCK ){
-        Kd0 = texture(TextureImage2, vec2(U,V)).rgb;
+        Kd = texture(TextureImage2, vec2(U,V)).rgb;
+        Ks = vec3(0.3, 0.3, 0.3);
+        Ka = Kd/2;
+        q = 20.0;
     }
     else if ( object_id == HEAD ){
-        Kd0 = texture(TextureImage4, vec2(U,V)).rgb;
+        Kd = texture(TextureImage4, vec2(U,V)).rgb;
+        Ks = vec3(0.3, 0.3, 0.3);
+        Ka = Kd/2;
+        q = 20.0;
     }
     else if ( object_id == BODY ){
-        Kd0 = texture(TextureImage5, vec2(U,V)).rgb;
+        Kd = texture(TextureImage5, vec2(U,V)).rgb;
+        Ks = vec3(0.3, 0.3, 0.3);
+        Ka = Kd/2;
+        q = 20.0;
     }
     else if ( object_id == LEG ){
-        Kd0 = texture(TextureImage6, vec2(U,V)).rgb;
+        Kd = texture(TextureImage6, vec2(U,V)).rgb;
+        Ks = vec3(0.3, 0.3, 0.3);
+        Ka = Kd/2;
+        q = 20.0;
     }
     else if ( object_id == UARM || object_id == FARM ){
-        Kd0 = texture(TextureImage7, vec2(U,V)).rgb;
+        Kd = texture(TextureImage7, vec2(U,V)).rgb;
+        Ks = vec3(0.3, 0.3, 0.3);
+        Ka = Kd/2;
+        q = 20.0;
+    }
+    else if ( object_id == WAVE ){
+        Kd = texture(TextureImage8, vec2(U,V)).rgb;
+        Ks = vec3(0.3, 0.3, 0.3);
+        Ka = Kd/2;
+        q = 20.0;
+    }
+    else if ( object_id == STAND ){
+        Kd = texture(TextureImage9, vec2(U,V)).rgb;
+        Ks = vec3(0.3, 0.3, 0.3);
+        Ka = Kd/2;
+        q = 20.0;
+    }
+    else if ( object_id == BALLOON ){
+        Kd = texture(TextureImage10, vec2(U,V)).rgb;
+        Ks = vec3(0.3, 0.3, 0.3);
+        Ka = Kd/2;
+        q = 20.0;
+    }
+    else if ( object_id == NUMB ){
+        Kd = texture(TextureImage11, vec2(U,V)).rgb;
+        Ks = vec3(0.3, 0.3, 0.3);
+        Ka = Kd/2;
+        q = 20.0;
+    }
+    else if ( object_id == CLOUDS ){
+        Kd = texture(TextureImage12, vec2(U,V)).rgb;
+        Ks = vec3(0.3, 0.3, 0.3);
+        Ka = Kd/2;
+        q = 20.0;
     }
 
-    // Equação de Iluminação
-    float lambert = max(0,dot(n,l));
+    // Espectro da fonte de iluminação
+    vec3 I = vec3(1.0,1.0,1.0); // PREENCH AQUI o espectro da fonte de luz
 
-    color.rgb = Kd0;// * (lambert + 0.02);
+    // Espectro da luz ambiente
+    vec3 Ia = vec3(0.2,0.2,0.2); // PREENCHA AQUI o espectro da luz ambiente
+
+    // Termo difuso utilizando a lei dos cossenos de Lambert
+    vec3 lambert_diffuse_term = vec3(Kd.x*I.x*(max(0,dot(n,l))),
+                                     Kd.y*I.y*(max(0,dot(n,l))),
+                                     Kd.z*I.z*(max(0,dot(n,l)))); // PREENCHA AQUI o termo difuso de Lambert
+
+    // Termo ambiente
+    vec3 ambient_term = vec3(Ka.x*Ia.x,Ka.y*Ia.y,Ka.z*Ia.z); // PREENCHA AQUI o termo ambiente
+
+    // Termo especular utilizando o modelo de iluminação de Phong
+    vec3 phong_specular_term  = vec3(Ks.x*I.x*(pow((max(0,dot(r,v))),q)),
+                                     Ks.y*I.y*(pow((max(0,dot(r,v))),q)),
+                                     Ks.z*I.z*(pow((max(0,dot(r,v))),q))); // PREENCH AQUI o termo especular de Phong
 
     // NOTE: Se você quiser fazer o rendering de objetos transparentes, é
     // necessário:
@@ -362,6 +471,10 @@ void main()
     //    transparentes que estão mais longe da câmera).
     // Alpha default = 1 = 100% opaco = 0% transparente
     color.a = 1;
+
+    // Cor final do fragmento calculada com uma combinação dos termos difuso,
+    // especular, e ambiente. Veja slide 129 do documento Aula_17_e_18_Modelos_de_Iluminacao.pdf.
+    color.rgb = lambert_diffuse_term + ambient_term + phong_specular_term;
 
     // Cor final com correção gamma, considerando monitor sRGB.
     // Veja https://en.wikipedia.org/w/index.php?title=Gamma_correction&oldid=751281772#Windows.2C_Mac.2C_sRGB_and_TV.2Fvideo_standard_gammas
