@@ -236,8 +236,8 @@ float g_CameraTheta = 0.785f; // Ângulo no plano ZX em relação ao eixo Z
 float g_CameraPhi = -0.785f;   // Ângulo em relação ao eixo Y
 float g_CameraDistance = 3.5f; // Distância da câmera para a origem
 float g_Camx = 0.0f; // componente x da posicao da camera
-float g_Camy = 0.0f; // componente x da posicao da camera
-float g_Camz = -5.0f; // componente x da posicao da camera
+float g_Camy = 1.0f; // componente y da posicao da camera
+float g_Camz = -5.0f; // componente z da posicao da camera
 float g_Camforward = 0.0f; //Componente de movimentacao da camera
 float g_Camsideways = 0.0f; //Componente de movimentacao da camera
 bool g_CameraFree = false;
@@ -516,9 +516,10 @@ int main(int argc, char* argv[])
 
         	// Abaixo definimos as varáveis que efetivamente definem a câmera virtual.
         	// Veja slides 195-227 e 229-234 do documento Aula_08_Sistemas_de_Coordenadas.pdf.
-        	camera_position_c  = glm::vec4(g_Camx,g_Camy,g_Camz,1.0f); // Ponto "c", centro da câmera
+
         	camera_view_vector   = glm::vec4(vx,vy,vz,0.0f); // Vetor "view", sentido para onde a câmera está virada
-		camera_view_vector = camera_view_vector/norm(camera_view_vector);
+            camera_view_vector = camera_view_vector/norm(camera_view_vector);
+
         	g_Camx += g_Camforward*camera_view_vector.x;
         	g_Camy += g_Camforward*camera_view_vector.y;
         	g_Camz += g_Camforward*camera_view_vector.z;
@@ -528,6 +529,8 @@ int main(int argc, char* argv[])
         	//g_Camy += g_Camsideways*(crossproduct(camera_view_vector,camera_up_vector)).y;
         	g_Camz += g_Camsideways*(crossproduct(camera_view_vector,camera_up_vector)).z;
         	g_Camsideways=0;
+
+        	camera_position_c  = glm::vec4(g_Camx,g_Camy,g_Camz,1.0f); // Ponto "c", centro da câmera
         } else{
         	// Computamos a posição da câmera utilizando coordenadas esféricas.  As
         	// variáveis g_CameraDistance, g_CameraPhi, e g_CameraTheta são
@@ -1647,6 +1650,14 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mod)
     if (key == GLFW_KEY_C && action == GLFW_PRESS)
     {
         g_CameraFree = !g_CameraFree;
+        if (g_CameraFree) {
+            g_CameraTheta = 0.785f;
+            g_CameraPhi = 0;
+            g_CameraDistance = 2.5f;
+            g_Camx = 0.0f;
+            g_Camy = 1.0f;
+            g_Camz = -5.0f;
+        }
     }
 }
 
