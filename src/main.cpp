@@ -304,6 +304,7 @@ int timeScore = 0;
 
 // Variavel de tempo
 unsigned long timeElapsed = 0;
+unsigned long newTimeElapsed = 0;
 
 // Variável que controla o tipo de projeção utilizada: perspectiva ou ortográfica.
 bool g_UsePerspectiveProjection = true;
@@ -478,7 +479,7 @@ int main(int argc, char* argv[])
     ObjModel numbs9("../../data/numbs9.obj");
     ComputeNormals(&numbs9);
     BuildTrianglesAndAddToVirtualScene(&numbs9);
-    
+
     ObjModel clouds("../../data/clouds.obj");
     ComputeNormals(&clouds);
     BuildTrianglesAndAddToVirtualScene(&clouds);
@@ -566,7 +567,7 @@ int main(int argc, char* argv[])
         MovCubicBezier(timeElapsed);
 
         MovPend(timeElapsed);
-        
+
         float planeNormalX = 0.0f;
         float planeNormalY = 1.0f;
         float planeNormalZ = 0.0f;
@@ -600,12 +601,12 @@ int main(int argc, char* argv[])
                 }
             }
         }
-        
+
         glm::vec4 camera_position_c;
         glm::vec4 camera_lookat_l;
         glm::vec4 camera_view_vector;
         glm::vec4 camera_up_vector;
-        
+
         if(g_CameraFree){
         	// Computamos a posição da câmera utilizando coordenadas esféricas.  As
         	// variáveis g_CameraDistance, g_CameraPhi, e g_CameraTheta são
@@ -617,9 +618,9 @@ int main(int argc, char* argv[])
 
         	// Abaixo definimos as varáveis que efetivamente definem a câmera virtual.
         	// Veja slides 195-227 e 229-234 do documento Aula_08_Sistemas_de_Coordenadas.pdf.
-        	camera_position_c  = glm::vec4(g_Camx,g_Camy,g_Camz,1.0f); // Ponto "c", centro da câmera
+
         	camera_view_vector   = glm::vec4(vx,vy,vz,0.0f); // Vetor "view", sentido para onde a câmera está virada
-		camera_view_vector = camera_view_vector/norm(camera_view_vector);
+            camera_view_vector = camera_view_vector/norm(camera_view_vector);
         	g_Camx += g_Camforward*camera_view_vector.x;
         	g_Camy += g_Camforward*camera_view_vector.y;
         	g_Camz += g_Camforward*camera_view_vector.z;
@@ -629,6 +630,8 @@ int main(int argc, char* argv[])
         	//g_Camy += g_Camsideways*(crossproduct(camera_view_vector,camera_up_vector)).y;
         	g_Camz += g_Camsideways*(crossproduct(camera_view_vector,camera_up_vector)).z;
         	g_Camsideways=0;
+
+        	camera_position_c  = glm::vec4(g_Camx,g_Camy,g_Camz,1.0f); // Ponto "c", centro da câmera
         } else{
         	// Computamos a posição da câmera utilizando coordenadas esféricas.  As
         	// variáveis g_CameraDistance, g_CameraPhi, e g_CameraTheta são
@@ -724,7 +727,7 @@ int main(int argc, char* argv[])
         }
         if (!alvoscount){
             if(timeScore == 0){
-                timeScore = timeElapsed;
+                timeScore = timeElapsed - newTimeElapsed;
                 timeScore = timeScore/1000;
                 thirdDigi = (timeScore/1)%10;
                 seconDigi = (timeScore/10)%10;
@@ -825,9 +828,9 @@ int main(int argc, char* argv[])
                 DrawVirtualObject("the_duck");
             }
             if(alvoB[i].isBOn){
-                // Desenhamos o modelo do balloonmodel 
+                // Desenhamos o modelo do balloonmodel
         model = Matrix_Translate(alvoB[i].alvoBCenterX,alvoB[i].alvoBCenterY,alvoB[i].alvoBCenterZ)
-              * Matrix_Rotate_Z((M_PI_2/4)*(cos(0.003f*timeElapsed))) 
+              * Matrix_Rotate_Z((M_PI_2/4)*(cos(0.003f*timeElapsed)))
               * Matrix_Translate(0.0f,2.0f,0.0f)
               * Matrix_Rotate_Z(M_PI)
               * Matrix_Rotate_X(M_PI_2)
@@ -999,12 +1002,12 @@ void Mov(unsigned long timeElapsed, GLFWwindow* window)
         		// pressionamento de W, simulando um deslocamento para frente.
         		g_Camforward += 0.1;
         	} else {
-            if(g_TorsoPositionZ<-2.5)
-            {
-                g_TorsoPositionZ += speed;
-                g_AngleLegX += 0.1f;
+                if(g_TorsoPositionZ<-2.5)
+                {
+                    g_TorsoPositionZ += speed;
+                    g_AngleLegX += 0.1f;
+                }
             }
-            	}
         }
         if(glfwGetKey(window,GLFW_KEY_S) == GLFW_PRESS)
         {
@@ -1013,12 +1016,12 @@ void Mov(unsigned long timeElapsed, GLFWwindow* window)
         		// pressionamento de W, simulando um deslocamento para frente.
         		g_Camforward -= 0.1;
         	} else {
-            if(g_TorsoPositionZ>-3.5)
-            {
-                g_TorsoPositionZ -= speed;
-                g_AngleLegX += 0.1f;
+                if(g_TorsoPositionZ>-3.5)
+                {
+                    g_TorsoPositionZ -= speed;
+                    g_AngleLegX += 0.1f;
+                }
             }
-            	}
         }
         if(glfwGetKey(window,GLFW_KEY_A) == GLFW_PRESS)
         {
@@ -1027,11 +1030,12 @@ void Mov(unsigned long timeElapsed, GLFWwindow* window)
         		// pressionamento de W, simulando um deslocamento para frente.
         		g_Camsideways -= 0.1;
         	} else {
-            if(g_TorsoPositionX<3.3)
-            {
-                g_TorsoPositionX += speed;
+                if(g_TorsoPositionX<3.3)
+                {
+                    g_TorsoPositionX += speed;
+                    g_AngleLegX += 0.1f;
+                }
             }
-            	}
         }
         if(glfwGetKey(window,GLFW_KEY_D) == GLFW_PRESS)
         {
@@ -1040,11 +1044,12 @@ void Mov(unsigned long timeElapsed, GLFWwindow* window)
         		// pressionamento de W, simulando um deslocamento para frente.
         		g_Camsideways += 0.1;
         	} else {
-            if(g_TorsoPositionX>-3.3)
-            {
-                g_TorsoPositionX -= speed;
+                if(g_TorsoPositionX>-3.3)
+                {
+                    g_TorsoPositionX -= speed;
+                    g_AngleLegX += 0.1f;
+                }
             }
-            	}
         }
         if(g_AngleLegX>1.2){g_AngleLegX=0;}
     }
@@ -1810,17 +1815,6 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mod)
         g_AngleZ += (mod & GLFW_MOD_SHIFT) ? -delta : delta;
     }
 
-    // Se o usuário apertar a tecla espaço, resetamos os ângulos de Euler para zero.
-    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
-    {
-        g_AngleX = 0.0f;
-        g_AngleY = 0.0f;
-        g_AngleZ = 0.0f;
-        g_ForearmAngleX = 0.0f;
-        g_ForearmAngleZ = 0.0f;
-        g_TorsoPositionX = 0.0f;
-        g_TorsoPositionY = 0.0f;
-    }
 
     // Se o usuário apertar a tecla P, utilizamos projeção perspectiva.
     if (key == GLFW_KEY_P && action == GLFW_PRESS)
@@ -1847,11 +1841,31 @@ void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mod)
         fprintf(stdout,"Shaders recarregados!\n");
         fflush(stdout);
     }
-    
+
     // Se o usuário apertar a tecla C, utilizamos camera free.
     if (key == GLFW_KEY_C && action == GLFW_PRESS)
     {
         g_CameraFree = !g_CameraFree;
+
+        if (g_CameraFree) {
+            g_CameraTheta = 0.785f;
+            g_CameraPhi = 0;
+            g_CameraDistance = 2.5f;
+            g_Camx = 0.0f;
+            g_Camy = 1.0f;
+            g_Camz = -5.0f;
+        }
+    }
+
+    // Se o usuário apertar a tecla N novo jogo.
+    if (key == GLFW_KEY_N && action == GLFW_PRESS)
+    {
+        for(int i = 0; i < ALVOS; i++){
+            alvo[i].isOn = true;
+            alvoB[i].isBOn = true;
+            newTimeElapsed = timeElapsed;
+            timeScore = 0;
+        }
     }
 }
 
