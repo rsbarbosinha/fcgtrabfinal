@@ -31,6 +31,8 @@ Não foram utilizados o ChatGPT ou outras ferramentas para realização deste tr
 O projeto foi criado com o CodeBlocks utilizando os projetos dos Laboratórios de aula como base, não sendo necessárias configurações ou bibliotecas adicionais. A compilação é executada diretamente pelo Codeblocks, de preferência no modo Release.
 
 # Jogo em execução
-![Screenshot 1](docs/screenshot1.png)
+![Screenshot 1 - Estado inicial](docs/screenshot1.png)
 
-![Screenshot 2](docs/screenshot2.png)
+![Screenshot 2 - Bolinha arremessada](docs/screenshot2.png)
+
+![Screenshot 3 - Pontuação final](docs/screenshot3.png)
