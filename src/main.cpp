@@ -523,6 +523,10 @@ int main(int argc, char* argv[])
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
 
+    int firstDigi = 0;
+    int seconDigi = 0;
+    int thirdDigi = 0;
+
     // Ficamos em um loop infinito, renderizando, até que o usuário feche a janela
     while (!glfwWindowShouldClose(window))
     {
@@ -687,9 +691,6 @@ int main(int argc, char* argv[])
         DrawVirtualObject("the_sphere");
 
         int alvoscount = 0;
-        int firstDigi = 0;
-        int seconDigi = 0;
-        int thirdDigi = 0;
 
         for (int i = 0; i < ALVOS; i++){
             if(alvo[i].isOn){alvoscount+=1;}
