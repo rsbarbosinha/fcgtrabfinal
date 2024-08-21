@@ -5,6 +5,8 @@ Foi implementado um jogo onde o objetivo é arremessar uma bolinha, acertando os
 O tempo utilizado é mostrado ao acertar todos os alvos.
 
 # Contribuições para o trabalho:
+O trabalho foi todo desenvolvido de forma colaborativa e ambos os autores participaram em todas as etapas. Portanto a divisão das contribuições não representa uma divisão rígida de tarefas, mas somente uma referência de quem ficou majoritariamente responsável por cada assunto.
+
 ## Rodolfo Barbosa
 - Código para desenhar os modelos
 - Animações
@@ -41,6 +43,7 @@ Os alvos móveis do tipo “patos” possuem movimentação definida através de
 - Clicar com o esquerdo - Arremessar a bolinha
 - N - Novo Jogo
 - C - Alternar entre câmera livre e normal (Look-at)
+- ESC - Encerrar o jogo e fechar aplicação.
 
 # Compilação e Execução da aplicação
 O projeto foi criado com o CodeBlocks utilizando os projetos dos Laboratórios de aula como base, não sendo necessárias configurações ou bibliotecas adicionais. A compilação é executada diretamente pelo Codeblocks, de preferência no modo Release.
